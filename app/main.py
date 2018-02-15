@@ -1,6 +1,20 @@
 import bottle
 import os
 import random
+from turn import turn
+from battlesnakeClasses import *
+
+#TODO: declare information you want to reference across turns here?
+
+
+        
+
+#initialize our snake
+squatchy = Snake("squatchy",True)
+
+#initialize the list of opponent snakes
+enemies = []
+#TODO: loop through returned list of compenitors and add a new snake entry for them.
 
 
 @bottle.route('/static/<path:path>')
@@ -10,6 +24,7 @@ def static(path):
 
 @bottle.post('/start')
 def start():
+    print("hello world")
     data = bottle.request.json
     game_id = data['game_id']
     board_width = data['width']
@@ -19,14 +34,17 @@ def start():
         bottle.request.urlparts.scheme,
         bottle.request.urlparts.netloc
     )
-
-    # TODO: Do things with data
+    
+    # TODO: initialize squatchy info from info being returned
 
     return {
-        'color': '#00FF00',
+        'name': 'SaaSquatch',
+        'color': '#003b45',
+        'secondary_color': '#65DB60',
         'taunt': '{} ({}x{})'.format(game_id, board_width, board_height),
         'head_url': head_url,
-        'name': 'battlesnake-python'
+        'head_type': 'fang',
+        'tail_type': 'small-rattle',
     }
 
 
@@ -34,11 +52,17 @@ def start():
 def move():
     data = bottle.request.json
 
-    # TODO: Do things with data
-    directions = ['up', 'down', 'left', 'right']
+    
+    
+    
+    #return the direction to move.
+    move = turn(data, squatchy, enemies)
+    
+    #directions = ['up', 'down', 'left', 'right']
 
     return {
-        'move': random.choice(directions),
+        #'move': random.choice(directions),
+        'move': move,
         'taunt': 'battlesnake-python!'
     }
 
@@ -47,3 +71,4 @@ def move():
 application = bottle.default_app()
 if __name__ == '__main__':
     bottle.run(application, host=os.getenv('IP', '0.0.0.0'), port=os.getenv('PORT', '8080'))
+    #bottle.run(application, host='localhost', port=os.getenv('PORT', '8080'))
