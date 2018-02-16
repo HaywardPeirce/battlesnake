@@ -7,10 +7,12 @@ from battlesnakeClasses import *
 #TODO: declare information you want to reference across turns here?
 
 
-        
+
 
 #initialize our snake
-squatchy = Snake("squatchy",True)
+#squatchy = Snake("","squatchy")
+#squatchy['isUs'] = True
+squatchy = None
 
 #initialize the list of opponent snakes
 enemies = []
@@ -34,7 +36,7 @@ def start():
         bottle.request.urlparts.scheme,
         bottle.request.urlparts.netloc
     )
-    
+
     # TODO: initialize squatchy info from info being returned
 
     return {
@@ -52,12 +54,12 @@ def start():
 def move():
     data = bottle.request.json
 
-    
-    
-    
+
+    #print(data)
+
     #return the direction to move.
     move = turn(data, squatchy, enemies)
-    
+
     #directions = ['up', 'down', 'left', 'right']
 
     return {
