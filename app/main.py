@@ -14,6 +14,8 @@ from battlesnakeClasses import *
 #squatchy['isUs'] = True
 squatchy = None
 
+gameBoard = None
+
 #initialize the list of opponent snakes
 enemies = []
 #TODO: loop through returned list of compenitors and add a new snake entry for them.
@@ -37,6 +39,8 @@ def start():
         bottle.request.urlparts.netloc
     )
 
+
+
     # TODO: initialize squatchy info from info being returned
 
     return {
@@ -56,9 +60,10 @@ def move():
 
 
     #print(data)
+    gameBoard = Board(data['height'], data['width'])
 
     #return the direction to move.
-    move = turn(data, squatchy, enemies)
+    move = turn(data, gameBoard, squatchy, enemies)
 
     #directions = ['up', 'down', 'left', 'right']
 

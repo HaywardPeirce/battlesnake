@@ -56,6 +56,8 @@ def enemyHitCheck(squatchy, enemies):
 
     enemyDirections = MoveChoices()
 
+    #TODO: I think this is broken by the conllisionCheck function somehow...
+
     #loop through each enemy snake
     for enemy in enemies:
         print("Checking whether squatchy will hit '{}'".format(enemy.name))
@@ -77,9 +79,35 @@ def enemyHitCheck(squatchy, enemies):
 
     return enemyDirections
 
+#return the direction of the quadant with the least other snakes in it
+def findOpenSpace(squatchy, enemies, gameBoard):
+    tempDirection = MoveChoices()
+
+    #q1, q2, q3, q4 = 0, 0, 0, 0
+
+    #set the x and y values that the higher-numbered quadrants will start on
+
+    tempDirection.addMoves(gameBoard.wayToMin(squatchy.head(), enemies))
+
+
+
+
+
+    #TODO: check which quadrant has the least snake parts, move there. If there are two equally empty ones?
+
+
+
+    #find min value
+    #find which quadrants have this least value
+    #find squatchy quadrants
+
+    #return directionToQuadrant()
+
+
+    return tempDirection
 
 #return a string of which way squatchy should move
-def turn(turnData, squatchy, enemies):
+def turn(turnData, gameBoard, squatchy, enemies):
 
     #TODO: setup snakes based on the their initial positions
 
@@ -154,7 +182,7 @@ def turn(turnData, squatchy, enemies):
 
     securityScore = MoveChoices()
 
-    #strategyScore = MoveChoices()
+    strategyScore = MoveChoices()
 
     #securityScore checks, to make sure this next turn's move is safe
     #TODO: check to see we wont hit ourself
@@ -163,7 +191,7 @@ def turn(turnData, squatchy, enemies):
     securityScore.printMoves()
 
     #TODO: check to see we won't hit a wall
-    securityScore.addMoves(wallHitCheck(squatchy, turnData['height'], turnData['width']))
+    securityScore.addMoves(wallHitCheck(squatchy, gameBoard.height, gameBoard.width))
     securityScore.printMoves()
 
     #TODO: check to see we won't hit another snake
@@ -173,13 +201,13 @@ def turn(turnData, squatchy, enemies):
     #TODO: check to see if we an eat next turn
 
 
-    #TODO: MOVE TO OPEN SPACE!!!
 
 
 
 
     #if the `securityScore.bestDirection` is a list, move on to the strategyScore direction
 
+    #returns a list of directions that should be moved in
     tempDirection = securityScore.bestDirection()
 
     if len(tempDirection) == 1:
@@ -188,12 +216,13 @@ def turn(turnData, squatchy, enemies):
 
     #else, if the `securityScore.bestDirection` is only one direction, return that
     else:
-        print("There are more than one safe choice, moving on to strategy choices")
+        print("There is more than one safe choice, moving on to us strategy choices")
 
         #TODO: strategyScore calculations
 
+        #TODO: MOVE TO OPEN SPACE!!!
         #TODO: simplest stategy play is moving to the empty quadrant
-
-            #TODO: best way to loop through each coordinate for each enemy?
+        strategyScore.addMoves(findOpenSpace(squatchy, enemies, gameBoard))
+        strategyScore.printMoves()
 
     return None
