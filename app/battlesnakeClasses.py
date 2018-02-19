@@ -56,13 +56,14 @@ class Quadrant:
 #-------
 
 class Board:
-    def __init__(self, height, width):
+    def __init__(self, height, width, food = []):
         self.height = height
         self.width = width
         self.q1 = Quadrant(0,(self.xMid() - 1), (self.yMid() - 1), 0)
         self.q2 = Quadrant(0, self.width, (self.yMid() - 1), self.xMid())
         self.q3 = Quadrant(self.yMid(), self.width, self.height, self.xMid())
         self.q4 = Quadrant(self.yMid(), (self.xMid() - 1), self.height, 0)
+        self.food = food
 
 
     def xMid(self):
@@ -90,14 +91,14 @@ class Board:
         #find what the lowest occupancy is
         minOccupancy = min(self.q1.checkOccupancy(enemies), self.q2.checkOccupancy(enemies), self.q3.checkOccupancy(enemies), self.q4.checkOccupancy(enemies))
 
-        print("the minimum number of occupied spaces in a quadrant is {}".format(minOccupancy))
+        print("The minimum number of occupied spaces in a quadrant is {}".format(minOccupancy))
 
         if self.q1.checkOccupancy(enemies) == minOccupancy: tempDirection.translateMove(self.q1.directionToQuadrant(point), emptyQuadrantScore)
         if self.q2.checkOccupancy(enemies) == minOccupancy: tempDirection.translateMove(self.q2.directionToQuadrant(point), emptyQuadrantScore)
         if self.q3.checkOccupancy(enemies) == minOccupancy: tempDirection.translateMove(self.q3.directionToQuadrant(point), emptyQuadrantScore)
         if self.q4.checkOccupancy(enemies) == minOccupancy: tempDirection.translateMove(self.q4.directionToQuadrant(point), emptyQuadrantScore)
 
-        tempDirection.printMoves()
+        tempDirection.printMoves("Directions to the emptiest quadrant: ")
         return tempDirection
 
 
@@ -128,7 +129,7 @@ class MoveChoices:
         if self.left == maxValue: direction.append("left")
 
         #print("the best direction to move is...")
-        print(direction)
+        print("The best direction to move is: {}".format(direction))
         return direction
 
         #if the max value is 0, there isn't a good choice, return `None`
@@ -150,8 +151,8 @@ class MoveChoices:
         self.up += toAdd.up
         self.down += toAdd.down
 
-    def printMoves(self):
-        print("Up: {}, Right: {}, Down: {}, Left: {}".format(self.up, self.right, self.down, self.left))
+    def printMoves(self, info=""):
+        print("{} Up: {}, Right: {}, Down: {}, Left: {}".format(info, self.up, self.right, self.down, self.left))
 
 class Snake:
     def __init__(self, id, name):

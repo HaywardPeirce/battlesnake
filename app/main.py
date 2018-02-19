@@ -12,12 +12,12 @@ from battlesnakeClasses import *
 #initialize our snake
 #squatchy = Snake("","squatchy")
 #squatchy['isUs'] = True
-squatchy = None
-
-gameBoard = None
-
-#initialize the list of opponent snakes
-enemies = []
+# squatchy = None
+#
+# gameBoard = None
+#
+# #initialize the list of opponent snakes
+# enemies = []
 #TODO: loop through returned list of compenitors and add a new snake entry for them.
 
 
@@ -58,9 +58,15 @@ def start():
 def move():
     data = bottle.request.json
 
-
+    #TODO: add food points into game boad declaration
     #print(data)
     gameBoard = Board(data['height'], data['width'])
+
+    squatchy = None
+
+    #initialize the list of opponent snakes
+    enemies = []
+
 
     #return the direction to move.
     move = turn(data, gameBoard, squatchy, enemies)
