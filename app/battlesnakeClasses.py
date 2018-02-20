@@ -201,13 +201,13 @@ class Snake:
                 if checkPair[0] == location[0]:
 
                     #if moving one up will not hit the body
-                    if (checkPair[1] + 1) == location[1]:
+                    if (checkPair[1] - 1) == location[1]:
                         tempDirection.up = 0
                         #print("moving up is not safe")
 
 
                     #if moving one down will hit the body
-                    if (checkPair[1] - 1) == location[1]:
+                    if (checkPair[1] + 1) == location[1]:
                         tempDirection.down = 0
                         #print("moving down is not safe")
 
