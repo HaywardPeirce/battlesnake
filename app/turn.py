@@ -216,6 +216,9 @@ def turn(turnData, gameBoard, squatchy, enemies):
 
     strategyScore = MoveChoices()
 
+    #list of moves which are allowed from a security standpoint, and are optimal from a strategy standpoint
+    finalDirectionList = []
+
     #securityScore checks, to make sure this next turn's move is safe
     #TODO: check to see we wont hit ourself
 
@@ -249,7 +252,7 @@ def turn(turnData, gameBoard, squatchy, enemies):
 
 
     #else, if the `securityScore.bestDirection` is only one direction, return that
-    else:
+    elif len(securityScoreDirections) > 1:
         print("------------------------------------------------")
         print("There is more than one safe choice({}), moving on to us strategy choices".format(securityScoreDirections))
 
@@ -265,32 +268,39 @@ def turn(turnData, gameBoard, squatchy, enemies):
 
         #TODO: reconcile security and strategy scores
 
+        print("strategyScore bestDirection:")
         strategyScoreDirections = strategyScore.bestDirection()
-
-        #list of moves which are allowed from a security standpoint, and are optimal from a strategy standpoint
-        finalDirectionList = []
 
         #loop through each of the good security moves, and better strategy moves
         for secureDirection in securityScoreDirections:
             for stratDirection in strategyScoreDirections:
                 #if the move in strategy is also safe, add it to the final list of moves that could be made
                 if secureDirection == stratDirection: finalDirectionList.append(secureDirection)
-
+    else:
         print("------------------------------------------------")
-        print("finalDirectionList: {}".format(finalDirectionList))
-        #if there is only one "final" approved move, return that
-        if len(finalDirectionList) == 1:
-            return finalDirectionList[0]
-        #if there are multiple options for safe and strategic moves, return a random one
-        else:
-            returnValue = random.choice(finalDirectionList)
-            print("Returning instruction to move : {}".format(returnValue))
-            return returnValue
+        print("No safe move available, returning totally random direction")
+        #fallback, return a random direction
+
+        returnValue = random.choice("up", "right", "down", "left")
+        print("Returning totally random direction: {}".format(returnValue))
+        return returnValue
+
 
     print("------------------------------------------------")
-    print("couldn't work out a smart move to make, selecting a random direction")
-    #fallback, return a random direction
+    print("finalDirectionList: {}".format(finalDirectionList))
+    #if there is only one "final" approved move, return that
+    if len(finalDirectionList) == 1:
+        return finalDirectionList[0]
+    #if there are multiple options for safe and strategic moves, return a random one
+    elif len(finalDirectionList) > 1:
+        returnValue = random.choice(finalDirectionList)
+        print("Returning random move from multiple finalDirectionList options: {}".format(returnValue))
+        return returnValue
+    else:
+        print("------------------------------------------------")
+        print("couldn't work out a strategic move to make, falling back to random safe move")
+        #fallback, return a random direction
 
-    returnValue = random.choice(securityScoreDirections)
-    print("Returning instruction to move : {}".format(returnValue))
-    return returnValue
+        returnValue = random.choice(securityScoreDirections)
+        print("Returning random safe move: {}".format(returnValue))
+        return returnValue
