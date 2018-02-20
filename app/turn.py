@@ -57,7 +57,11 @@ def enemyHitCheck(squatchy, enemies):
     #loop through each enemy, `conllisionCheck` for our snake head
     print("squatchy head: [{}]".format(squatchy.head()))
 
-    enemyDirections = MoveChoices()
+    #value to use when weighting enemy detection
+    score = 1
+
+    #set initial enemy direction to "safe" as hit detection will set unsafe options to 0
+    enemyDirections = MoveChoices(score, score, score, score)
 
     #TODO: I think this is broken by the conllisionCheck function somehow...
 
@@ -65,7 +69,7 @@ def enemyHitCheck(squatchy, enemies):
     for enemy in enemies:
         print("------------------------")
         print("Checking whether squatchy will hit '{}'".format(enemy.name))
-        tempDirection = enemy.conllisionCheck(squatchy.head(), 1)
+        tempDirection = enemy.conllisionCheck(squatchy.head(), score)
 
         #tempDirection.printMoves()
 
