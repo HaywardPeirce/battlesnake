@@ -65,25 +65,26 @@ def enemyHitCheck(squatchy, enemies):
     for enemy in enemies:
         print("------------------------")
         print("Checking whether squatchy will hit '{}'".format(enemy.name))
-        tempDirection = enemy.conllisionCheck(squatchy.head())
+        tempDirection = enemy.conllisionCheck(squatchy.head(), 1)
 
-        tempDirection.printMoves()
+        #tempDirection.printMoves()
 
-        if tempDirection.up > enemyDirections.up:
+        #if the scores for the hit checks againts this snake turn up new collisons, count out those moves. (less than means a new dangerous move)
+        if tempDirection.up < enemyDirections.up:
             enemyDirections.up = tempDirection.up
-        if tempDirection.down > enemyDirections.down:
+        if tempDirection.down < enemyDirections.down:
             enemyDirections.down = tempDirection.down
-        if tempDirection.right > enemyDirections.right:
+        if tempDirection.right < enemyDirections.right:
             enemyDirections.right = tempDirection.right
-        if tempDirection.left > enemyDirections.left:
+        if tempDirection.left < enemyDirections.left:
             enemyDirections.left = tempDirection.left
 
-        enemyDirections.printMoves()
+        enemyDirections.printMoves("After `enemyDirections` for {}".format(enemy.name))
 
 
     return enemyDirections
 
-def foodCheck(squatchy, gameBoard):
+def foodCheck(squatchy, food):
     print("------------------------------------------------")
     print("Check whether squatchy should head towards any food")
 
@@ -91,11 +92,15 @@ def foodCheck(squatchy, gameBoard):
 
     #TODO: calculate directions to closest food. Maybe see of we are the closest as well?
 
+
+
     return foodDirections
 
 
 #return the direction of the quadant with the least other snakes in it
 def findOpenSpace(squatchy, enemies, gameBoard):
+    print("------------------------------------------------")
+    print("Check which directions lead towards open space")
     tempDirection = MoveChoices()
 
     #q1, q2, q3, q4 = 0, 0, 0, 0
@@ -144,6 +149,8 @@ def turn(turnData, gameBoard, squatchy, enemies):
     #first turn, setup opponent snakes
     #if turnData['turn'] == 0:
         #TODO: setup initialization info about each snake
+
+    gameBoard.addFood(turnData['food']['data'])
 
     enemies = []
 
@@ -223,9 +230,7 @@ def turn(turnData, gameBoard, squatchy, enemies):
     securityScore.addMoves(enemyHitCheck(squatchy, enemies))
     securityScore.printMoves("After `enemyHitCheck`: ")
 
-    #TODO: check to see if we an eat next turn
-    securityScore.addMoves(foodCheck(squatchy, enemies))
-    securityScore.printMoves("After `foodCheck`: ")
+
 
 
 
@@ -246,9 +251,13 @@ def turn(turnData, gameBoard, squatchy, enemies):
     #else, if the `securityScore.bestDirection` is only one direction, return that
     else:
         print("------------------------------------------------")
-        print("There is more than one safe choice, moving on to us strategy choices")
+        print("There is more than one safe choice({}), moving on to us strategy choices".format(securityScoreDirections))
 
         #TODO: strategyScore calculations
+
+        #TODO: check to see if we an eat next turn
+        strategyScore.addMoves(foodCheck(squatchy, gameBoard.food))
+        strategyScore.printMoves("After `foodCheck`: ")
 
         #TODO: simplest stategy play is moving to the empty quadrant
         strategyScore.addMoves(findOpenSpace(squatchy, enemies, gameBoard))

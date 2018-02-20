@@ -65,6 +65,10 @@ class Board:
         self.q4 = Quadrant(self.yMid(), (self.xMid() - 1), self.height, 0)
         self.food = food
 
+    #read in the food for this turn
+    def addFood(self, foodData):
+        for item in foodData:
+            self.food.append(tuple((item['x'],item['y'])))
 
     def xMid(self):
         #if the board is odd-sized
@@ -178,37 +182,48 @@ class Snake:
 
 
     #TODO: function for checking if a coordinate pair is adjacent to this snake
-    def conllisionCheck(self, checkPair):
+    def conllisionCheck(self, checkPair, score = 1):
 
         #weighted score to add if the direction will not run into this snake
-        freespaceScore = 1
+        #freespaceScore = 1
 
-        tempDirection = MoveChoices()
+        tempDirection = MoveChoices(score, score, score, score)
+
+        #print("Snake {}, head: {}, locations: {}".format(self.name, self.head(), self.locations))
+
         #for non-head location in squatchy
         for location in self.locations:
+            if location is not self.head():
+                #print("location: {}".format(location))
 
-            #if the head shares the same x value as the element of the body
-            if checkPair[0] == location[0]:
+                #if the head shares the same x value as the element of the body
+                #print("checkPair[0]: {}, location[0]: {}".format(checkPair[0],location[0]))
+                if checkPair[0] == location[0]:
 
-                #if moving one up will not hit the body
-                if (checkPair[1] + 1) != location[1]:
-                    tempDirection.up = freespaceScore
+                    #if moving one up will not hit the body
+                    if (checkPair[1] + 1) == location[1]:
+                        tempDirection.up = 0
+                        #print("moving up is not safe")
 
 
-                #if moving one down will hit the body
-                if (checkPair[1] - 1) != location[1]:
-                    tempDirection.down = freespaceScore
+                    #if moving one down will hit the body
+                    if (checkPair[1] - 1) == location[1]:
+                        tempDirection.down = 0
+                        #print("moving down is not safe")
 
-            #if the head shares the same y value as the element of the body
-            if checkPair[1] == location[1]:
+                #if the head shares the same y value as the element of the body
+                #print("checkPair[1]: {}, location[1]: {}".format(checkPair[1],location[1]))
+                if checkPair[1] == location[1]:
 
-                #if moving one to the right will hit the body
-                if (checkPair[0] + 1) != location[0]:
-                    tempDirection.right = freespaceScore
+                    #if moving one to the right will hit the body
+                    if (checkPair[0] + 1) == location[0]:
+                        tempDirection.right = 0
+                        #print("moving right is not safe")
 
-                #if moving one to the left will hit the body
-                if (checkPair[0] - 1) != location[0]:
-                    tempDirection.left = freespaceScore
+                    #if moving one to the left will hit the body
+                    if (checkPair[0] - 1) == location[0]:
+                        tempDirection.left = 0
+                        #print("moving left is not safe")
 
         #print()
 
