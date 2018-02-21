@@ -4,13 +4,14 @@ import random
 #import each of the component files running sections of the snake
 
 #check if squatchy will hit himself
-def squatchyHitCheck(squatchy):
+def squatchyHitCheck(squatchy, score):
     #get current squatchy head location
     print("------------------------------------------------")
     print("Checking whether squatchy will hit himself")
     print("squatchy head: [{}]".format(squatchy.head()))
 
-    tempDirection = squatchy.conllisionCheck(squatchy.head())
+    #see if squatchy's head will hit his body
+    tempDirection = squatchy.conllisionCheck(squatchy.head(), score)
 
     #print(tempDirection)
 
@@ -23,14 +24,14 @@ def squatchyHitCheck(squatchy):
 
 
 #check if squatchy will run into a wall
-def wallHitCheck(squatchy, height, width):
+def wallHitCheck(squatchy, height, width, freespaceScore):
     print("------------------------------------------------")
     print("Checking whether squatchy will hit the wall")
     print("squatchy head: [{}]".format(squatchy.head()))
 
     #how wide is the board?
 
-    freespaceScore = 1
+    #freespaceScore = 1
 
     tempDirection = MoveChoices()
 
@@ -51,24 +52,26 @@ def wallHitCheck(squatchy, height, width):
     return tempDirection
 
 
-def enemyHitCheck(squatchy, enemies):
+def enemyHitCheck(squatchy, enemies, score):
     print("------------------------------------------------")
     print("Check whether squatchy will hit any other snakes")
     #loop through each enemy, `conllisionCheck` for our snake head
     print("squatchy head: [{}]".format(squatchy.head()))
 
     #value to use when weighting enemy detection
-    score = 1
+    #score = 1
 
     #set initial enemy direction to "safe" as hit detection will set unsafe options to 0
     enemyDirections = MoveChoices(score, score, score, score)
 
-    #TODO: I think this is broken by the conllisionCheck function somehow...
+
 
     #loop through each enemy snake
     for enemy in enemies:
         print("------------------------")
         print("Checking whether squatchy will hit '{}'".format(enemy.name))
+
+        #see if squatchy's head will collide with any part of this enemy snake
         tempDirection = enemy.conllisionCheck(squatchy.head(), score)
 
         #tempDirection.printMoves()
@@ -88,7 +91,49 @@ def enemyHitCheck(squatchy, enemies):
 
     return enemyDirections
 
-def foodCheck(squatchy, food):
+def moveToSameCheck(squatchy, enemies, score):
+    print("------------------------------------------------")
+    print("Check whether squatchy might be moving to the same square as another snake")
+
+    enemyDirections = MoveChoices(score, score, score, score)
+    directions = [(0,-1),(1,0),(1,1),(-1,0)]
+    #TODO:
+
+    squatchyNextTurn = squatchy.possibleMoves()
+
+    print("squatchy head: [{}]".format(squatchy.head()))
+
+    #loop through each enemy
+    for enemy in enemies:
+        print("------------------------")
+        print("Checking whether squatchy might move into '{}'".format(enemy.name))
+        #print("{} head: [{}]".format(enemy.name, enemy.head()))
+
+        enemyNextTurn = enemy.possibleMoves()
+
+        #loop through the enemies possible moves, and check if it would collide with where squatchy would be
+        for position in enemyNextTurn:
+            tempDirection = conllisionCheck(position, squatchy.head(), score)
+
+            #tempDirection.printMoves()
+
+            #if the scores for the hit checks againts this snake turn up new collisons, count out those moves. (less than means a new dangerous move)
+            if tempDirection.up < enemyDirections.up:
+                enemyDirections.up = tempDirection.up
+            if tempDirection.down < enemyDirections.down:
+                enemyDirections.down = tempDirection.down
+            if tempDirection.right < enemyDirections.right:
+                enemyDirections.right = tempDirection.right
+            if tempDirection.left < enemyDirections.left:
+                enemyDirections.left = tempDirection.left
+
+
+        enemyDirections.printMoves("After `enemyDirections` for {}".format(enemy.name))
+
+    return enemyDirections
+
+
+def foodCheck(squatchy, food, score):
     print("------------------------------------------------")
     print("Check whether squatchy should head towards any food")
 
@@ -102,7 +147,7 @@ def foodCheck(squatchy, food):
 
 
 #return the direction of the quadant with the least other snakes in it
-def findOpenSpace(squatchy, enemies, gameBoard):
+def findOpenSpace(squatchy, enemies, gameBoard, score):
     print("------------------------------------------------")
     print("Check which directions lead towards open space")
     tempDirection = MoveChoices()
@@ -154,6 +199,7 @@ def turn(turnData, gameBoard, squatchy, enemies):
     #if turnData['turn'] == 0:
         #TODO: setup initialization info about each snake
 
+    #add food points into game boad declaration
     gameBoard.addFood(turnData['food']['data'])
 
     enemies = []
@@ -224,17 +270,17 @@ def turn(turnData, gameBoard, squatchy, enemies):
     finalDirectionList = []
 
     #securityScore checks, to make sure this next turn's move is safe
-    #TODO: check to see we wont hit ourself
 
-    securityScore.addMoves(squatchyHitCheck(squatchy))
+    #check to see we wont hit ourself
+    securityScore.addMoves(squatchyHitCheck(squatchy, 100))
     securityScore.printMoves("After `squatchyHitCheck`: ")
 
-    #TODO: check to see we won't hit a wall
-    securityScore.addMoves(wallHitCheck(squatchy, gameBoard.height, gameBoard.width))
+    #check to see we won't hit a wall
+    securityScore.addMoves(wallHitCheck(squatchy, gameBoard.height, gameBoard.width, 100))
     securityScore.printMoves("After `wallHitCheck`: ")
 
-    #TODO: check to see we won't hit another snake
-    securityScore.addMoves(enemyHitCheck(squatchy, enemies))
+    #check to see we won't hit another snake
+    securityScore.addMoves(enemyHitCheck(squatchy, enemies, 100))
     securityScore.printMoves("After `enemyHitCheck`: ")
 
 
@@ -260,18 +306,27 @@ def turn(turnData, gameBoard, squatchy, enemies):
         print("------------------------------------------------")
         print("There is more than one safe choice({}), moving on to us strategy choices".format(securityScoreDirections))
 
-        #TODO: strategyScore calculations
+        #strategyScore calculations
+
+        #TODO: check to see if another snake might move into the same spot as us next turns
+        strategyScore.addMoves(moveToSameCheck(squatchy, enemies, 100))
+        strategyScore.printMoves("After `moveToSameCheck`: ")
+
+        #TODO: check to see if the snake will have moved away from a spot next turn. maybe have this and `moveToSameCheck` in security check?
+
+        #TODO: check if they are moving into an enclosed space, don't do that (flood fill?)
 
         #TODO: check to see if we an eat next turn
-        strategyScore.addMoves(foodCheck(squatchy, gameBoard.food))
-        strategyScore.printMoves("After `foodCheck`: ")
+        #strategyScore.addMoves(foodCheck(squatchy, gameBoard.food, 100))
+        #strategyScore.printMoves("After `foodCheck`: ")
 
-        #TODO: simplest stategy play is moving to the empty quadrant
-        strategyScore.addMoves(findOpenSpace(squatchy, enemies, gameBoard))
+        # simplest stategy play is moving to the empty quadrant
+        strategyScore.addMoves(findOpenSpace(squatchy, enemies, gameBoard, 50))
         strategyScore.printMoves("After `findOpenSpace`: ")
 
-        #TODO: reconcile security and strategy scores
+        #TODO: advanced strategy move checks
 
+        #reconcile security and strategy scores
         print("strategyScore bestDirection:")
         strategyScoreDirections = strategyScore.bestDirection()
 

@@ -1,3 +1,40 @@
+def conllisionCheck(location, checkPair, score):
+
+    #location is static, checkPair is the moving point
+
+    tempDirection = MoveChoices(score, score, score, score)
+
+    #if the head shares the same x value as the element of the body
+    #print("checkPair[0]: {}, location[0]: {}".format(checkPair[0],location[0]))
+    if checkPair[0] == location[0]:
+
+        #if moving one up will not hit the body
+        if (checkPair[1] - 1) == location[1]:
+            tempDirection.up = 0
+            #print("moving up is not safe")
+
+
+        #if moving one down will hit the body
+        if (checkPair[1] + 1) == location[1]:
+            tempDirection.down = 0
+            #print("moving down is not safe")
+
+    #if the head shares the same y value as the element of the body
+    #print("checkPair[1]: {}, location[1]: {}".format(checkPair[1],location[1]))
+    if checkPair[1] == location[1]:
+
+        #if moving one to the right will hit the body
+        if (checkPair[0] + 1) == location[0]:
+            tempDirection.right = 0
+            #print("moving right is not safe")
+
+        #if moving one to the left will hit the body
+        if (checkPair[0] - 1) == location[0]:
+            tempDirection.left = 0
+            #print("moving left is not safe")
+
+    return tempDirection
+
 class Quadrant:
     def __init__(self, top, right, bottom, left):
         self.topBound = top
@@ -150,6 +187,8 @@ class MoveChoices:
 
 
     def addMoves(self, toAdd):
+
+        #TODO: maybe only add moves if the existing value isn't 0 (and other values aren't 0)?(means that it can still be moved to)
         self.left += toAdd.left
         self.right += toAdd.right
         self.up += toAdd.up
@@ -180,8 +219,21 @@ class Snake:
             #print(self.locations[0])
             return self.locations[0]
 
+    #return a list of coordinate pairs of where this snake might move
+    def possibleMoves(self):
 
-    #TODO: function for checking if a coordinate pair is adjacent to this snake
+        tempMoves = []
+        #directions = [(0,-1),(1,0),(0,1),(-1,0)]
+        tempMoves.append(tuple((self.head()[0],(self.head()[1]-1))))
+        tempMoves.append(tuple(((self.head()[0]+1),self.head()[1])))
+        tempMoves.append(tuple((self.head()[0],(self.head()[1]+1))))
+        tempMoves.append(tuple(((self.head()[0]-1),self.head()[1])))
+
+        #print(tempMoves)
+
+        return tempMoves
+
+    #TODO: function for checking if the head of a snake might move into the body of this snake
     def conllisionCheck(self, checkPair, score = 1):
 
         #weighted score to add if the direction will not run into this snake
@@ -191,39 +243,13 @@ class Snake:
 
         #print("Snake {}, head: {}, locations: {}".format(self.name, self.head(), self.locations))
 
-        #for non-head location in squatchy
+
         for location in self.locations:
-            if location is not self.head():
-                #print("location: {}".format(location))
+            #for non-head location in squatchy
+            #if location is not self.head():
+            #print("location: {}".format(location))
 
-                #if the head shares the same x value as the element of the body
-                #print("checkPair[0]: {}, location[0]: {}".format(checkPair[0],location[0]))
-                if checkPair[0] == location[0]:
-
-                    #if moving one up will not hit the body
-                    if (checkPair[1] - 1) == location[1]:
-                        tempDirection.up = 0
-                        #print("moving up is not safe")
-
-
-                    #if moving one down will hit the body
-                    if (checkPair[1] + 1) == location[1]:
-                        tempDirection.down = 0
-                        #print("moving down is not safe")
-
-                #if the head shares the same y value as the element of the body
-                #print("checkPair[1]: {}, location[1]: {}".format(checkPair[1],location[1]))
-                if checkPair[1] == location[1]:
-
-                    #if moving one to the right will hit the body
-                    if (checkPair[0] + 1) == location[0]:
-                        tempDirection.right = 0
-                        #print("moving right is not safe")
-
-                    #if moving one to the left will hit the body
-                    if (checkPair[0] - 1) == location[0]:
-                        tempDirection.left = 0
-                        #print("moving left is not safe")
+            tempDirection.addMoves(conllisionCheck(location, checkPair, score))
 
         #print()
 

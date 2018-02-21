@@ -58,7 +58,7 @@ def start():
 def move():
     data = bottle.request.json
 
-    #TODO: add food points into game boad declaration
+    #TODO: get initial time in millisecond
     #print(data)
     gameBoard = Board(data['height'], data['width'])
 
