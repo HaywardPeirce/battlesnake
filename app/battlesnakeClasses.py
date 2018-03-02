@@ -3,6 +3,7 @@ def conllisionCheck(location, checkPair, score):
     #location is static, checkPair is the moving point
 
     tempDirection = MoveChoices(score, score, score, score)
+    #tempDirection.printMoves()
 
     #if the head shares the same x value as the element of the body
     #print("checkPair[0]: {}, location[0]: {}".format(checkPair[0],location[0]))
@@ -33,6 +34,7 @@ def conllisionCheck(location, checkPair, score):
             tempDirection.left = 0
             #print("moving left is not safe")
 
+    #tempDirection.printMoves("In `conllisionCheck`: ")
     return tempDirection
 
 class Quadrant:
@@ -124,9 +126,9 @@ class Board:
 
 
     #directions to the emptiest quadrant
-    def wayToMin(self, point, enemies):
+    def wayToMin(self, point, enemies, score):
 
-        emptyQuadrantScore = 1
+        emptyQuadrantScore = score
         tempDirection = MoveChoices()
 
         #find what the lowest occupancy is
@@ -180,11 +182,15 @@ class MoveChoices:
 
     #translate a string move into an actual direction, add it to direction
     def translateMove(self, move, value):
-        if move == "up" or move =="top": self.up += value
-        if move == "right": self.right += value
-        if move == "down" or move == "bottom": self.down += value
-        if move == "left": self.left += value
+        if move == "up" or move =="top": self.up = value
+        if move == "right": self.right = value
+        if move == "down" or move == "bottom": self.down = value
+        if move == "left": self.left = value
 
+        # if move == "up" or move =="top": self.up += value
+        # if move == "right": self.right += value
+        # if move == "down" or move == "bottom": self.down += value
+        # if move == "left": self.left += value
 
     def addMoves(self, toAdd):
 
@@ -193,6 +199,17 @@ class MoveChoices:
         self.right += toAdd.right
         self.up += toAdd.up
         self.down += toAdd.down
+
+    #function to
+    def boolDownMoves(self, otherMoves):
+        if otherMoves.up < self.up:
+            self.up = otherMoves.up
+        if otherMoves.down < self.down:
+            self.down = otherMoves.down
+        if otherMoves.right < self.right:
+            self.right = otherMoves.right
+        if otherMoves.left < self.left:
+            self.left = otherMoves.left
 
     def printMoves(self, info=""):
         print("{} Up: {}, Right: {}, Down: {}, Left: {}".format(info, self.up, self.right, self.down, self.left))
@@ -233,6 +250,29 @@ class Snake:
 
         return tempMoves
 
+    #check the direction to a specific point from this snake's head
+    def directionCheck(self, point, score):
+        tempDirection = MoveChoices(0,0,0,0)
+
+        head = self.head()
+
+        #the point is further to the right
+        if point[0] > head[0]: tempDirection.right = score
+
+        #the point is further to the left
+        elif point[0] < head[0]: tempDirection.left = score
+
+        #the point is on the same Y-axis
+        #elif point[0] == head[0]: tempDirection.left = score
+
+        #if the point is further down
+        if point[1] > head[1]: tempDirection.down = score
+
+        #if the point is further up
+        if point[1] < head[1]: tempDirection.up = score
+
+        return tempDirection
+
     #TODO: function for checking if the head of a snake might move into the body of this snake
     def conllisionCheck(self, checkPair, score = 1):
 
@@ -241,16 +281,17 @@ class Snake:
 
         tempDirection = MoveChoices(score, score, score, score)
 
-        #print("Snake {}, head: {}, locations: {}".format(self.name, self.head(), self.locations))
+        print("Snake {}, head: {}, locations: {}".format(self.name, self.head(), self.locations))
 
 
         for location in self.locations:
             #for non-head location in squatchy
             #if location is not self.head():
             #print("location: {}".format(location))
+            #print("checkPair: {}".format(checkPair))
 
-            tempDirection.addMoves(conllisionCheck(location, checkPair, score))
-
+            tempDirection.boolDownMoves(conllisionCheck(location, checkPair, score))
+            #tempDirection.printMoves("After `boolDownMoves`: ")
         #print()
 
         return tempDirection

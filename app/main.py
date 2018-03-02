@@ -6,7 +6,7 @@ from battlesnakeClasses import *
 
 #TODO: declare information you want to reference across turns here?
 
-
+debuggingMode = False
 
 
 #initialize our snake

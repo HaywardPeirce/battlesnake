@@ -1,5 +1,5 @@
 from battlesnakeClasses import *
-import random
+import random, math
 
 #import each of the component files running sections of the snake
 
@@ -49,6 +49,7 @@ def wallHitCheck(squatchy, height, width, freespaceScore):
     if squatchy.head()[1] < (height - 1):
         tempDirection.down = freespaceScore
 
+    tempDirection.printMoves()
     return tempDirection
 
 
@@ -74,17 +75,19 @@ def enemyHitCheck(squatchy, enemies, score):
         #see if squatchy's head will collide with any part of this enemy snake
         tempDirection = enemy.conllisionCheck(squatchy.head(), score)
 
-        #tempDirection.printMoves()
+        tempDirection.printMoves()
+
+        enemyDirections.boolDownMoves(tempDirection)
 
         #if the scores for the hit checks againts this snake turn up new collisons, count out those moves. (less than means a new dangerous move)
-        if tempDirection.up < enemyDirections.up:
-            enemyDirections.up = tempDirection.up
-        if tempDirection.down < enemyDirections.down:
-            enemyDirections.down = tempDirection.down
-        if tempDirection.right < enemyDirections.right:
-            enemyDirections.right = tempDirection.right
-        if tempDirection.left < enemyDirections.left:
-            enemyDirections.left = tempDirection.left
+        # if tempDirection.up < enemyDirections.up:
+        #     enemyDirections.up = tempDirection.up
+        # if tempDirection.down < enemyDirections.down:
+        #     enemyDirections.down = tempDirection.down
+        # if tempDirection.right < enemyDirections.right:
+        #     enemyDirections.right = tempDirection.right
+        # if tempDirection.left < enemyDirections.left:
+        #     enemyDirections.left = tempDirection.left
 
         enemyDirections.printMoves("After `enemyDirections` for {}".format(enemy.name))
 
@@ -117,15 +120,17 @@ def moveToSameCheck(squatchy, enemies, score):
 
             #tempDirection.printMoves()
 
+            enemyDirections.boolDownMoves(tempDirection)
+
             #if the scores for the hit checks againts this snake turn up new collisons, count out those moves. (less than means a new dangerous move)
-            if tempDirection.up < enemyDirections.up:
-                enemyDirections.up = tempDirection.up
-            if tempDirection.down < enemyDirections.down:
-                enemyDirections.down = tempDirection.down
-            if tempDirection.right < enemyDirections.right:
-                enemyDirections.right = tempDirection.right
-            if tempDirection.left < enemyDirections.left:
-                enemyDirections.left = tempDirection.left
+            # if tempDirection.up < enemyDirections.up:
+            #     enemyDirections.up = tempDirection.up
+            # if tempDirection.down < enemyDirections.down:
+            #     enemyDirections.down = tempDirection.down
+            # if tempDirection.right < enemyDirections.right:
+            #     enemyDirections.right = tempDirection.right
+            # if tempDirection.left < enemyDirections.left:
+            #     enemyDirections.left = tempDirection.left
 
 
         enemyDirections.printMoves("After `enemyDirections` for {}".format(enemy.name))
@@ -133,15 +138,50 @@ def moveToSameCheck(squatchy, enemies, score):
     return enemyDirections
 
 
-def foodCheck(squatchy, food, score):
+def foodCheck(squatchy, height, width, food, score):
     print("------------------------------------------------")
     print("Check whether squatchy should head towards any food")
 
+    #TODO: work out scaling/weighting factor based on how hungry squatchy is
+    if squatchy.health > 20:
+        score = 0
+
     foodDirections = MoveChoices()
 
-    #TODO: calculate directions to closest food. Maybe see of we are the closest as well?
+    bestDist = max(height, width)
+    bestFood = []
 
+    #calculate directions to closest food. Maybe see of we are the closest as well?
 
+    for nibble in food:
+
+        #tempDistance = math.sqrt( ((squatchy.head()[0]-nibble[0])**2)+((squatchy.head()[1]-nibble[1])**2) )
+
+        #just sum each component of the distance rather than finding the diagonal route
+        tempDistance = abs(squatchy.head()[0]-nibble[0]) + abs(squatchy.head()[1]-nibble[1])
+
+        if tempDistance < bestDist:
+            bestFood = [tuple((nibble[0],nibble[1]))]
+            bestDist = tempDistance
+
+        elif tempDistance == bestDist:
+            bestFood.append(tuple((nibble[0],nibble[1])))
+
+    #TODO: work out direction to nearest food pieces
+
+    #loop through the food items that are closest
+    for item in bestFood:
+        tempDirection = squatchy.directionCheck(item, score)
+
+        #take all the directions which lead to the closest foods, but don't go above the value of `score`
+        if tempDirection.up > foodDirections.up:
+            foodDirections.up = tempDirection.up
+        if tempDirection.down > foodDirections.down:
+            foodDirections.down = tempDirection.down
+        if tempDirection.right > foodDirections.right:
+            foodDirections.right = tempDirection.right
+        if tempDirection.left > foodDirections.left:
+            foodDirections.left = tempDirection.left
 
     return foodDirections
 
@@ -156,7 +196,8 @@ def findOpenSpace(squatchy, enemies, gameBoard, score):
 
     #set the x and y values that the higher-numbered quadrants will start on
 
-    tempDirection.addMoves(gameBoard.wayToMin(squatchy.head(), enemies))
+    #tempDirection.addMoves(gameBoard.wayToMin(squatchy.head(), enemies))
+    tempDirection.boolDownMoves(gameBoard.wayToMin(squatchy.head(), enemies, 100))
 
 
 
@@ -172,7 +213,7 @@ def findOpenSpace(squatchy, enemies, gameBoard, score):
 
     #return directionToQuadrant()
 
-
+    tempDirection.printMoves("After `findOpenSpace`(inside): ")
     return tempDirection
 
 #return a string of which way squatchy should move
@@ -262,7 +303,7 @@ def turn(turnData, gameBoard, squatchy, enemies):
 
     #initialize the security score for the turn as being zero
 
-    securityScore = MoveChoices()
+    securityScore = MoveChoices(100,100,100,100)
 
     strategyScore = MoveChoices()
 
@@ -272,15 +313,18 @@ def turn(turnData, gameBoard, squatchy, enemies):
     #securityScore checks, to make sure this next turn's move is safe
 
     #check to see we wont hit ourself
-    securityScore.addMoves(squatchyHitCheck(squatchy, 100))
+    #securityScore.addMoves(squatchyHitCheck(squatchy, 100))
+    securityScore.boolDownMoves(squatchyHitCheck(squatchy, 100))
     securityScore.printMoves("After `squatchyHitCheck`: ")
 
     #check to see we won't hit a wall
-    securityScore.addMoves(wallHitCheck(squatchy, gameBoard.height, gameBoard.width, 100))
+    #securityScore.addMoves(wallHitCheck(squatchy, gameBoard.height, gameBoard.width, 100))
+    securityScore.boolDownMoves(wallHitCheck(squatchy, gameBoard.height, gameBoard.width, 100))
     securityScore.printMoves("After `wallHitCheck`: ")
 
     #check to see we won't hit another snake
-    securityScore.addMoves(enemyHitCheck(squatchy, enemies, 100))
+    #securityScore.addMoves(enemyHitCheck(squatchy, enemies, 100))
+    securityScore.boolDownMoves(enemyHitCheck(squatchy, enemies, 100))
     securityScore.printMoves("After `enemyHitCheck`: ")
 
 
@@ -304,7 +348,7 @@ def turn(turnData, gameBoard, squatchy, enemies):
     #else, if the `securityScore.bestDirection` is only one direction, return that
     elif len(securityScoreDirections) > 1:
         print("------------------------------------------------")
-        print("There is more than one safe choice({}), moving on to us strategy choices".format(securityScoreDirections))
+        print("There is more than one safe choice({}), moving on to use strategy choices".format(securityScoreDirections))
 
         #strategyScore calculations
 
@@ -317,16 +361,24 @@ def turn(turnData, gameBoard, squatchy, enemies):
         #TODO: check if they are moving into an enclosed space, don't do that (flood fill?)
 
         #TODO: check to see if we an eat next turn
-        #strategyScore.addMoves(foodCheck(squatchy, gameBoard.food, 100))
-        #strategyScore.printMoves("After `foodCheck`: ")
+        print("------------------------------------------------")
+        #print(gameBoard.food)
+        if gameBoard.food:
+            if squatchy.health < 50:
+                strategyScore.addMoves(foodCheck(squatchy, gameBoard.height, gameBoard.width, gameBoard.food, 100))
+                strategyScore.printMoves("After `foodCheck`: ")
+            else: print("Squatchy's health is above 50, so no food moves will be recommended")
+        else: print("There is no food on the board")
 
         # simplest stategy play is moving to the empty quadrant
-        strategyScore.addMoves(findOpenSpace(squatchy, enemies, gameBoard, 50))
+        strategyScore.addMoves(findOpenSpace(squatchy, enemies, gameBoard, 100))
+        print("------------------------------------------------")
         strategyScore.printMoves("After `findOpenSpace`: ")
 
         #TODO: advanced strategy move checks
 
         #reconcile security and strategy scores
+        print("------------------------------------------------")
         print("strategyScore bestDirection:")
         strategyScoreDirections = strategyScore.bestDirection()
 
