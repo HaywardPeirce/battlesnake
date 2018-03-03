@@ -142,10 +142,6 @@ def foodCheck(squatchy, height, width, food, score):
     print("------------------------------------------------")
     print("Check whether squatchy should head towards any food")
 
-    #TODO: work out scaling/weighting factor based on how hungry squatchy is
-    if squatchy.health > 20:
-        score = 0
-
     foodDirections = MoveChoices()
 
     bestDist = max(height, width)
@@ -167,11 +163,21 @@ def foodCheck(squatchy, height, width, food, score):
         elif tempDistance == bestDist:
             bestFood.append(tuple((nibble[0],nibble[1])))
 
-    #TODO: work out direction to nearest food pieces
+    #print(squatchy.health, score)
+    print("The best food items are {}, and are {} spaces away.".format(bestFood, bestDist))
+
+    #TODO: work out scaling/weighting factor based on how hungry squatchy is. Maybe look at using the distance to the food
+    if squatchy.health > 30:
+        score = score/2
+    elif squatchy.health < 20 and bestDist > 10:
+        score = score*2
+
+    print("The weighted food score is now {}".format(score))
 
     #loop through the food items that are closest
     for item in bestFood:
         tempDirection = squatchy.directionCheck(item, score)
+        #tempDirection.printMoves("after best direction")
 
         #take all the directions which lead to the closest foods, but don't go above the value of `score`
         if tempDirection.up > foodDirections.up:
@@ -183,6 +189,7 @@ def foodCheck(squatchy, height, width, food, score):
         if tempDirection.left > foodDirections.left:
             foodDirections.left = tempDirection.left
 
+    foodDirections.printMoves("The recommendation for `foodCheck` is ")
     return foodDirections
 
 
@@ -190,7 +197,7 @@ def foodCheck(squatchy, height, width, food, score):
 def findOpenSpace(squatchy, enemies, gameBoard, score):
     print("------------------------------------------------")
     print("Check which directions lead towards open space")
-    tempDirection = MoveChoices()
+    tempDirection = MoveChoices(score, score, score, score)
 
     #q1, q2, q3, q4 = 0, 0, 0, 0
 
@@ -241,6 +248,7 @@ def turn(turnData, gameBoard, squatchy, enemies):
         #TODO: setup initialization info about each snake
 
     #add food points into game boad declaration
+    gameBoard.food = []
     gameBoard.addFood(turnData['food']['data'])
 
     enemies = []

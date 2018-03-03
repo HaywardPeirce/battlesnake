@@ -256,6 +256,8 @@ class Snake:
 
         head = self.head()
 
+        #print(head[0], point[0], score)
+
         #the point is further to the right
         if point[0] > head[0]: tempDirection.right = score
 
@@ -269,8 +271,9 @@ class Snake:
         if point[1] > head[1]: tempDirection.down = score
 
         #if the point is further up
-        if point[1] < head[1]: tempDirection.up = score
+        elif point[1] < head[1]: tempDirection.up = score
 
+        #tempDirection.printMoves()
         return tempDirection
 
     #TODO: function for checking if the head of a snake might move into the body of this snake
