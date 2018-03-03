@@ -170,7 +170,7 @@ def foodCheck(squatchy, height, width, food, score):
     if squatchy.health > 30:
         score = score/2
     elif squatchy.health < 20 and bestDist > 10:
-        score = score*2
+        score = score*3
 
     print("The weighted food score is now {}".format(score))
 
@@ -335,7 +335,9 @@ def turn(turnData, gameBoard, squatchy, enemies):
     securityScore.boolDownMoves(enemyHitCheck(squatchy, enemies, 100))
     securityScore.printMoves("After `enemyHitCheck`: ")
 
-
+    #TODO: check to see if another snake might move into the same spot as us next turns
+    securityScore.boolDownMoves(moveToSameCheck(squatchy, enemies, 100))
+    securityScore.printMoves("After `moveToSameCheck`: ")
 
 
 
@@ -361,8 +363,8 @@ def turn(turnData, gameBoard, squatchy, enemies):
         #strategyScore calculations
 
         #TODO: check to see if another snake might move into the same spot as us next turns
-        strategyScore.addMoves(moveToSameCheck(squatchy, enemies, 100))
-        strategyScore.printMoves("After `moveToSameCheck`: ")
+        # strategyScore.addMoves(moveToSameCheck(squatchy, enemies, 100))
+        # strategyScore.printMoves("After `moveToSameCheck`: ")
 
         #TODO: check to see if the snake will have moved away from a spot next turn. maybe have this and `moveToSameCheck` in security check?
 

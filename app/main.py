@@ -47,10 +47,10 @@ def start():
         'name': 'SaaSquatch',
         'color': '#003b45',
         'secondary_color': '#65DB60',
-        'taunt': '{} ({}x{})'.format(game_id, board_width, board_height),
+        'taunt': 'I ate Bigfoot',
         'head_url': head_url,
         'head_type': 'fang',
-        'tail_type': 'small-rattle',
+        'tail_type': 'regular',
     }
 
 
@@ -76,7 +76,7 @@ def move():
     return {
         #'move': random.choice(directions),
         'move': move,
-        'taunt': 'battlesnake-python!'
+        'taunt': 'I ate Bigfoot'
     }
 
 
