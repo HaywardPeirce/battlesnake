@@ -167,10 +167,10 @@ def foodCheck(squatchy, height, width, food, score):
     print("The best food items are {}, and are {} spaces away.".format(bestFood, bestDist))
 
     #TODO: work out scaling/weighting factor based on how hungry squatchy is. Maybe look at using the distance to the food
-    if squatchy.health > 30:
-        score = score/2
+    # if squatchy.health > 30:
+    #     score = score/2
     #elif squatchy.health < 20 and bestDist > 10:
-    elif squatchy.health < 20:
+    if squatchy.health < 30:
         score = score*3
 
     print("The weighted food score is now {}".format(score))
@@ -375,7 +375,7 @@ def turn(turnData, gameBoard, squatchy, enemies):
         print("------------------------------------------------")
         #print(gameBoard.food)
         if gameBoard.food:
-            if squatchy.health < 50:
+            if squatchy.health < 60:
                 strategyScore.addMoves(foodCheck(squatchy, gameBoard.height, gameBoard.width, gameBoard.food, 100))
                 strategyScore.printMoves("After `foodCheck`: ")
             else: print("Squatchy's health is above 50, so no food moves will be recommended")
