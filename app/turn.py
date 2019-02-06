@@ -1,5 +1,7 @@
 from battlesnakeClasses import *
-import random, math
+import random, math, logging
+
+logging.basicConfig(level=logging.INFO)
 
 #import each of the component files running sections of the snake
 
@@ -33,6 +35,8 @@ def wallHitCheck(squatchy, height, width, freespaceScore):
 
     #freespaceScore = 1
 
+    # TODO: this section shouldnt be referencing the height, width directly. Should be using the board object
+
     tempDirection = MoveChoices()
 
     #if squatchy isnt right up againts to left side of the board
@@ -57,7 +61,7 @@ def enemyHitCheck(squatchy, enemies, score):
     print("------------------------------------------------")
     print("Check whether squatchy will hit any other snakes")
     #loop through each enemy, `conllisionCheck` for our snake head
-    print("squatchy head: [{}]".format(squatchy.head()))
+    logging.debug("squatchy head: [{}]".format(squatchy.head()))
 
     #value to use when weighting enemy detection
     #score = 1
@@ -104,7 +108,7 @@ def moveToSameCheck(squatchy, enemies, score):
 
     squatchyNextTurn = squatchy.possibleMoves()
 
-    print("squatchy head: [{}]".format(squatchy.head()))
+    logging.debug("squatchy head: [{}]".format(squatchy.head()))
 
     #loop through each enemy
     for enemy in enemies:
@@ -198,6 +202,8 @@ def foodCheck(squatchy, height, width, food, score):
 def findOpenSpace(squatchy, enemies, gameBoard, score):
     print("------------------------------------------------")
     print("Check which directions lead towards open space")
+    
+    # initialize the directional score to be `score`
     tempDirection = MoveChoices(score, score, score, score)
 
     #q1, q2, q3, q4 = 0, 0, 0, 0
@@ -205,13 +211,12 @@ def findOpenSpace(squatchy, enemies, gameBoard, score):
     #set the x and y values that the higher-numbered quadrants will start on
 
     #tempDirection.addMoves(gameBoard.wayToMin(squatchy.head(), enemies))
+    
+    # check the direction to the emptiest quadrant against the initialized scores. if the direction to the min says not to move in a direction, adjust this functions movement scores accordingly
     tempDirection.boolDownMoves(gameBoard.wayToMin(squatchy.head(), enemies, 100))
 
-
-
-
-
-    #TODO: check which quadrant has the least snake parts, move there. If there are two equally empty ones?
+    # TODO: is this function working correctly? why aren't we just taking the `wayToMin` score?
+    # TODO: check which quadrant has the least snake parts, move there. If there are two equally empty ones?
 
 
 
@@ -223,6 +228,93 @@ def findOpenSpace(squatchy, enemies, gameBoard, score):
 
     tempDirection.printMoves("After `findOpenSpace`(inside): ")
     return tempDirection
+
+
+def boundryFill(x, y, squatchy, enemies, gameBoard):
+
+    # TODO: check that this location on the board is not outside the bounds, or where part of a snake is
+
+    # TODO: how to make sure to not to re-check the same squares over and over? maybe add an array to the board object append a locations each time one is checked, and then check if a locaiton has allready been checked each time
+
+    # if this point has already been checked
+    if [x,y] in gameBoard.containedAreaCheckList: return 0
+
+    # if the point is not on the game board, go no further, don't add it to the count
+    if not gameBoard.isOnBoard([x,y]): return 0
+    
+    # if this point is the location of a piece of a snake, go no further, dont add it to the count
+    if [x,y] in squatchy.locations: return 0
+    
+    for enemy in enemies:
+        if [x,y] in enemy: return 0
+    
+
+    # add this location to the list of points on the board that have been checked
+    gameBoard.containedAreaCheckList.append([x,y])
+
+    count = 0
+
+    # check up
+    count += boundryFill(x, y + 1, squatchy, enemies, gameBoard)
+    # check right
+    count += boundryFill(x + 1, y, squatchy, enemies, gameBoard)
+    # check down
+    count += boundryFill(x, y - 1, squatchy, enemies, gameBoard)
+    # check left
+    count += boundryFill(x - 1, y, squatchy, enemies, gameBoard)
+
+    return count
+
+
+def containedBoundryCheck(squatchy, enemies, gameBoard, score):
+
+    # TODO: maybe only run this check if there is a snake body part right in front of this snake's head
+
+    tempDirection = MoveChoices()
+
+    up = boundryFill(x, y + 1, squatchy, enemies, gameBoard)
+    # check right
+    right = boundryFill(x + 1, y, squatchy, enemies, gameBoard)
+    # check down
+    down = boundryFill(x, y - 1, squatchy, enemies, gameBoard)
+    # check left
+    left = boundryFill(x - 1, y, squatchy, enemies, gameBoard)
+    
+    biggestArea = max(up, down, left, right)
+
+    if up == biggestArea: tempDirection.up = score
+    if down == biggestArea: tempDirection.down = score
+    if left == biggestArea: tempDirection.left = score
+    if right == biggestArea: tempDirection.right = score
+
+    # If there is only one good direction return that
+    if len(tempDirection.bestDirection) == 1: return tempDirection
+    
+    # if there is more than one good move
+    elif len(tempDirection.bestDirection) > 1:
+        
+        # get a list of the direction moves that best lead to the tail of the snake
+        directionToTail = directionToPoint(squatchy.tail)
+
+        # if there is only one best direction to the tail
+        if len(directionToTail) == 1:
+            
+            # compare the current list of equally good directions to open areas against which direction leads to the tail or this snake
+            tempDirection.boolDownMoves()
+
+        # if there is more than one good move to the tail
+        else:
+            
+            # loop through each of the equally good moves towards the tail, and check the direction still moves the snake in the right direction
+            for direction in directionToTail:
+                # compare the current list of equally good directions to open areas against which direction leads to the tail or this snake
+                tempDirection.boolDownMoves()
+
+        # after having made sure that each equally open direction to move is also the best route to the tail, return these directions
+        return tempDirection
+
+    # if there are no good moves
+    else: return tempDirection
 
 #return a string of which way squatchy should move
 def turn(turnData, gameBoard, squatchy, enemies):
@@ -269,12 +361,12 @@ def turn(turnData, gameBoard, squatchy, enemies):
         tempSnake.health = snake['health']
 
         if snake['id'] == turnData['you']['id']:
-            print("Adding data in for snake: {} (squatchy)".format(snake['name']))
+            logging.debug("Adding data in for snake: {} (squatchy)".format(snake['name']))
             squatchy = tempSnake
             squatchy.isUs = True
 
         else:
-            print("Adding data in for snake: {}".format(snake['name']))
+            logging.debug("Adding data in for snake: {}".format(snake['name']))
             enemies.append(tempSnake)
 
 
@@ -390,7 +482,7 @@ def turn(turnData, gameBoard, squatchy, enemies):
 
         #reconcile security and strategy scores
         print("------------------------------------------------")
-        print("strategyScore bestDirection:")
+        # print("strategyScore bestDirection:")
         strategyScoreDirections = strategyScore.bestDirection()
 
         #loop through each of the good security moves, and better strategy moves

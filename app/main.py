@@ -2,10 +2,13 @@ import json
 import os
 import random
 import bottle
+import logging
 from turn import turn
 from battlesnakeClasses import *
 
 from api import ping_response, start_response, move_response, end_response
+
+logging.basicConfig(level=logging.INFO)
 
 @bottle.route('/')
 def index():
@@ -41,7 +44,7 @@ def start():
             initialize your snake state here using the
             request's data if necessary.
     """
-    print(json.dumps(data))
+    logging.debug(json.dumps(data))
 
     color = "#00FF00"
 
@@ -56,7 +59,7 @@ def move():
     TODO: Using the data from the endpoint request object, your
             snake AI must choose a direction to move in.
     """
-    print(json.dumps(data))
+    logging.debug(json.dumps(data))
 
     # directions = ['up', 'down', 'left', 'right']
     # direction = random.choice(directions)
@@ -82,7 +85,7 @@ def end():
     TODO: If your snake AI was stateful,
         clean up any stateful objects here.
     """
-    print(json.dumps(data))
+    logging.debug(json.dumps(data))
 
     return end_response()
 
