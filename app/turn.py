@@ -250,21 +250,21 @@ def turn(turnData, gameBoard, squatchy, enemies):
 
     #add food points into game boad declaration
     gameBoard.food = []
-    gameBoard.addFood(turnData['food']['data'])
+    gameBoard.addFood(turnData['board']['food'])
 
     enemies = []
 
-    for snake in turnData['snakes']['data']:
+    for snake in turnData['board']['snakes']:
 
         tempSnake = Snake(snake['id'], snake['name'])
 
         tempLocations = []
-        for location in snake['body']['data']:
+        for location in snake['body']:
             tempLocations.append(tuple((location['x'],location['y'])))
 
         tempSnake.locations = tempLocations
 
-        tempSnake.length = snake['length']
+        tempSnake.length = len(snake['body'])
 
         tempSnake.health = snake['health']
 
