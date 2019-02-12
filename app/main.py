@@ -64,7 +64,7 @@ def move():
     # directions = ['up', 'down', 'left', 'right']
     # direction = random.choice(directions)
 
-    gameBoard = Board(data['board']['height'], data['board']['width'])
+    gameBoard = Board((data['board']['height'] - 1), (data['board']['width'] - 1))
 
     squatchy = None
 

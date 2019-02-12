@@ -42,22 +42,24 @@ def conllisionCheck(location, checkPair, score):
 
 class Quadrant:
     def __init__(self, top, right, bottom, left):
+        # 0-indexed bounds for the quadrant
         self.topBound = top
         self.rightBound = right
         self.bottomBound = bottom
         self.leftBound = left
-        #self.occupancy = 0
+        # self.occupancy = 0
 
-    #check how many enemies are in a quadrant
+    # check how many enemies are in a quadrant
     def checkOccupancy(self, enemies):
 
         occupancy = 0
 
-        #use number of squares in quadrant to find average density,
+        # use number of squares in quadrant to find average density,
         for enemy in enemies:
             for location in enemy.locations:
 
-                if location[0] < self.rightBound and location[0] >= self.leftBound and location[1] < self.bottomBound and location[1] >= self.topBound:
+                # check if the body part of the enemy is within the bounds of the quadrant, add it to the occupancy list count
+                if location[0] > self.leftBound and location[0] <= self.rightBound and location[1] > self.topBound and location[1] <= self.bottomBound:
                     occupancy += 1
 
         return occupancy
@@ -99,42 +101,62 @@ class Quadrant:
 
 class Board:
     def __init__(self, height, width, food = []):
+        # zero-indexed height and width for the board
         self.height = height
         self.width = width
-        self.q1 = Quadrant(0,(self.xMid() - 1), (self.yMid() - 1), 0)
+        self.q1 = Quadrant(0, (self.xMid() - 1), (self.yMid() - 1), 0)
         self.q2 = Quadrant(0, self.width, (self.yMid() - 1), self.xMid())
         self.q3 = Quadrant(self.yMid(), self.width, self.height, self.xMid())
         self.q4 = Quadrant(self.yMid(), (self.xMid() - 1), self.height, 0)
         self.food = food
         self.containedAreaCheckList = []
 
-    #read in the food for this turn
+    # read in the food for this turn
     def addFood(self, foodData):
         for item in foodData:
             self.food.append(tuple((item['x'],item['y'])))
 
+    # return the x-axis mid-point of the board
     def xMid(self):
-        #if the board is odd-sized
+
+        # NOTE: as the board is zero-indexed, "even"-width boards will show up as odd with modulus
+
+        # if the board is even-sized (e.g. width of 14, shows up as board 0 -> 13, %2 is true)
         if self.width % 2:
+
+            # (( 13 - (1)) / 2 ) + 1 = 7
+            # results in the middle being on the upper side of the middle between rows
             return ((self.width - (self.width % 2))/2) + 1
-        #if the board is even-sized
-        else: return self.width/2
+
+        # if the board is odd-sized (e.g. width of 15, shows up as board 0 -> 14, %2 is false)
+        else:
+            # 14 / 2 = 7
+            return self.width/2
 
     def yMid(self):
-        #if the board is odd-sized
+
+        # NOTE: as the board is zero-indexed, "even"-width boards will show up as odd with modulus
+
+        # if the board is even-sized (e.g. height of 14, shows up as board 0 -> 13, %2 is true)
         if self.height % 2:
-            return ((self.height - (self.height % 2))/2) + 1
-        #if the board is even-sized
-        else: return self.height/2
+
+            # (( 13 - (1)) / 2 ) + 1 = 7
+            # results in the middle being on the upper side of the middle between rows
+            return ((self.height - (self.height % 2)) / 2) + 1
+
+        # if the board is odd-sized (e.g. height of 15, shows up as board 0 -> 14, %2 is false)
+        else:
+            # 14 / 2 = 7
+            return self.width / 2
     
     # check if a coordinate pair is on the board
     def isOnBoard(self, point):
         
         # if the point is outside the x bounds of the board
-        if point[0] < 0 and point[0] > self.width: return False
+        if point[0] < 0 or point[0] > self.width: return False
 
         # if the point is outside the y bounds of the board
-        if point[1] < 0 and point[1] > self.height: return False
+        if point[1] < 0 or point[1] > self.height: return False
         
         return True
 
