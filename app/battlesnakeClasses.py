@@ -1,3 +1,6 @@
+import logging
+logging.basicConfig(level=logging.INFO)
+
 def conllisionCheck(location, checkPair, score):
 
     #location is static, checkPair is the moving point
@@ -39,22 +42,24 @@ def conllisionCheck(location, checkPair, score):
 
 class Quadrant:
     def __init__(self, top, right, bottom, left):
+        # 0-indexed bounds for the quadrant
         self.topBound = top
         self.rightBound = right
         self.bottomBound = bottom
         self.leftBound = left
-        #self.occupancy = 0
+        # self.occupancy = 0
 
-    #check how many enemies are in a quadrant
+    # check how many enemies are in a quadrant
     def checkOccupancy(self, enemies):
 
         occupancy = 0
 
-        #use number of squares in quadrant to find average density,
+        # use number of squares in quadrant to find average density,
         for enemy in enemies:
             for location in enemy.locations:
 
-                if location[0] < self.rightBound and location[0] >= self.leftBound and location[1] < self.bottomBound and location[1] >= self.topBound:
+                # check if the body part of the enemy is within the bounds of the quadrant, add it to the occupancy list count
+                if location[0] > self.leftBound and location[0] <= self.rightBound and location[1] > self.topBound and location[1] <= self.bottomBound:
                     occupancy += 1
 
         return occupancy
@@ -96,46 +101,80 @@ class Quadrant:
 
 class Board:
     def __init__(self, height, width, food = []):
+        # zero-indexed height and width for the board
         self.height = height
         self.width = width
-        self.q1 = Quadrant(0,(self.xMid() - 1), (self.yMid() - 1), 0)
+        self.q1 = Quadrant(0, (self.xMid() - 1), (self.yMid() - 1), 0)
         self.q2 = Quadrant(0, self.width, (self.yMid() - 1), self.xMid())
         self.q3 = Quadrant(self.yMid(), self.width, self.height, self.xMid())
         self.q4 = Quadrant(self.yMid(), (self.xMid() - 1), self.height, 0)
         self.food = food
+        self.containedAreaCheckList = []
 
-    #read in the food for this turn
+    # read in the food for this turn
     def addFood(self, foodData):
         for item in foodData:
             self.food.append(tuple((item['x'],item['y'])))
 
+    # return the x-axis mid-point of the board
     def xMid(self):
-        #if the board is odd-sized
+
+        # NOTE: as the board is zero-indexed, "even"-width boards will show up as odd with modulus
+
+        # if the board is even-sized (e.g. width of 14, shows up as board 0 -> 13, %2 is true)
         if self.width % 2:
+
+            # (( 13 - (1)) / 2 ) + 1 = 7
+            # results in the middle being on the upper side of the middle between rows
             return ((self.width - (self.width % 2))/2) + 1
-        #if the board is even-sized
-        else: return self.width/2
+
+        # if the board is odd-sized (e.g. width of 15, shows up as board 0 -> 14, %2 is false)
+        else:
+            # 14 / 2 = 7
+            return self.width/2
 
     def yMid(self):
-        #if the board is odd-sized
-        if self.height % 2:
-            return ((self.height - (self.height % 2))/2) + 1
-        #if the board is even-sized
-        else: return self.height/2
 
+        # NOTE: as the board is zero-indexed, "even"-width boards will show up as odd with modulus
+
+        # if the board is even-sized (e.g. height of 14, shows up as board 0 -> 13, %2 is true)
+        if self.height % 2:
+
+            # (( 13 - (1)) / 2 ) + 1 = 7
+            # results in the middle being on the upper side of the middle between rows
+            return ((self.height - (self.height % 2)) / 2) + 1
+
+        # if the board is odd-sized (e.g. height of 15, shows up as board 0 -> 14, %2 is false)
+        else:
+            # 14 / 2 = 7
+            return self.width / 2
+    
+    # check if a coordinate pair is on the board
+    def isOnBoard(self, point):
+        
+        # if the point is outside the x bounds of the board
+        if point[0] < 0 or point[0] > self.width: return False
+
+        # if the point is outside the y bounds of the board
+        if point[1] < 0 or point[1] > self.height: return False
+        
+        return True
 
 
     #directions to the emptiest quadrant
     def wayToMin(self, point, enemies, score):
 
         emptyQuadrantScore = score
+        
+        # initialize the scores for each directional move to start at 0
         tempDirection = MoveChoices()
 
         #find what the lowest occupancy is
         minOccupancy = min(self.q1.checkOccupancy(enemies), self.q2.checkOccupancy(enemies), self.q3.checkOccupancy(enemies), self.q4.checkOccupancy(enemies))
 
-        print("The minimum number of occupied spaces in a quadrant is {}".format(minOccupancy))
+        logging.debug("The minimum number of occupied spaces in a quadrant is {}".format(minOccupancy))
 
+        # check each quadrant to see if it has the previously-established lowest score, and if it does apply the `emptyQuadrantScore` value to that direction
         if self.q1.checkOccupancy(enemies) == minOccupancy: tempDirection.translateMove(self.q1.directionToQuadrant(point), emptyQuadrantScore)
         if self.q2.checkOccupancy(enemies) == minOccupancy: tempDirection.translateMove(self.q2.directionToQuadrant(point), emptyQuadrantScore)
         if self.q3.checkOccupancy(enemies) == minOccupancy: tempDirection.translateMove(self.q3.directionToQuadrant(point), emptyQuadrantScore)
@@ -143,7 +182,6 @@ class Board:
 
         tempDirection.printMoves("Directions to the emptiest quadrant: ")
         return tempDirection
-
 
 
 
@@ -200,7 +238,7 @@ class MoveChoices:
         self.up += toAdd.up
         self.down += toAdd.down
 
-    #function to
+    # function to compare the current directional score against another set of directional scores. If the value of the other directions scores are lower, use those
     def boolDownMoves(self, otherMoves):
         if otherMoves.up < self.up:
             self.up = otherMoves.up
@@ -212,7 +250,7 @@ class MoveChoices:
             self.left = otherMoves.left
 
     def printMoves(self, info=""):
-        print("{} Up: {}, Right: {}, Down: {}, Left: {}".format(info, self.up, self.right, self.down, self.left))
+        logging.debug("{} Up: {}, Right: {}, Down: {}, Left: {}".format(info, self.up, self.right, self.down, self.left))
 
 class Snake:
     def __init__(self, id, name):
@@ -230,11 +268,36 @@ class Snake:
     def head(self):
         #print(len(self.locations))
         if not self.locations:
-            print('this snake has no head')
+            logging.debug('this snake has no head')
             return None
         else:
             #print(self.locations[0])
             return self.locations[0]
+
+    #function for checking location of the snake's tail end
+    def tail(self):
+        # return the last item in the list of this snake's body locations
+        return self.locations[-1]
+
+    # get the direction that leads most direction from this snake's head to the point in question
+    def directionToPoint(self, point):
+
+        directions = []
+
+        xdif = point[0] - self.head[0]
+        ydif = point[1] - self.head[1]
+
+        # if the points are further apart in the y direction
+        if abs(xdif) < abs(ydif): 
+            if ydif > 0: direction.append("up")
+            if ydif < 0: direction.append("down")
+        # means the points are further apart in the x direction
+        else: 
+            if xdif > 0: direction.append("right")
+            if xdif < 0: direction.append("left")
+
+        return directions
+        
 
     #return a list of coordinate pairs of where this snake might move
     def possibleMoves(self):
@@ -284,7 +347,7 @@ class Snake:
 
         tempDirection = MoveChoices(score, score, score, score)
 
-        print("Snake {}, head: {}, locations: {}".format(self.name, self.head(), self.locations))
+        logging.debug("Snake {}, head: {}, locations: {}".format(self.name, self.head(), self.locations))
 
 
         for location in self.locations:
