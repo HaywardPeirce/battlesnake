@@ -1,0 +1,50 @@
+{
+	"game": {
+		"id": "game-id-string"
+	},
+	"turn": 4,
+	"board": {
+		"height": 15,
+		"width": 15,
+		"snakes": [
+			{
+				"id": "snake-id-string",
+				"name": "Sneky Snek",
+				"health": 90,
+				"body": [
+					{
+						"x": 8,
+						"y": 8
+					},
+					{
+						"x": 7,
+						"y": 8
+					},
+					{
+						"x": 6,
+						"y": 8
+					}
+				]
+			}
+		]
+	},
+	"you": {
+		"id": "snake-id-string",
+		"name": "Sneky Snek",
+		"health": 90,
+		"body": [
+			{
+				"x": 8,
+				"y": 8
+			},
+			{
+				"x": 7,
+				"y": 8
+			},
+			{
+				"x": 6,
+				"y": 8
+			}
+		]
+	}
+}
