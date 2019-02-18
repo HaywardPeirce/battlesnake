@@ -4,8 +4,8 @@
 	},
 	"turn": 4,
 	"board": {
-		"height": 15,
-		"width": 15,
+		"height": 16,
+		"width": 16,
 		"snakes": [
 			{
 				"id": "snake-id-string",

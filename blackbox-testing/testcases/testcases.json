@@ -1,69 +1,73 @@
 [
   {
-    "name": "case0",
-    "fileName": "testcase.json",
-    "expectedResult": "['right', 'left']",
-    "turns": 1
-  },
-  {
     "name": "case00a",
     "fileName": "testcase00a.json",
-    "expectedResult": "['right', 'left']",
+    "description": "Snake doesn't hit itself while facing up",
+    "expectedResult": "['right', 'left', 'up']",
     "turns": 1
   },
   {
 
     "name": "case00b",
     "fileName": "testcase00b.json",
-    "expectedResult": "['right', 'left']",
+    "description": "Snake doesn't hit itself while facing right",
+    "expectedResult": "['right', 'up', 'down']",
     "turns": 1
   },
   {
     "name": "case00c",
     "fileName": "testcase00c.json",
-    "expectedResult": "['right', 'left']",
+    "description": "Snake doesn't hit itself while facing down",
+    "expectedResult": "['right', 'left', 'down']",
     "turns": 1
   },
   {
     "name": "case00d",
     "fileName": "testcase00d.json",
-    "expectedResult": "['right', 'left']",
+    "description": "Snake doesn't hit itself while facing left",
+    "expectedResult": "['up', 'left', 'down']",
     "turns": 1
   },
   {
     "name": "case01a",
     "fileName": "testcase01a.json",
-    "expectedResult": "['right', 'left']",
+    "description": "Snake doesn't die in top left corner",
+    "expectedResult": "['right']",
     "turns": 1
   },
   {
     "name": "case01b",
     "fileName": "testcase01b.json",
-    "expectedResult": "['right', 'left']",
+    "description": "Snake doesn't die in top right corner",
+    "expectedResult": "['left']",
     "turns": 1
   },
   {
     "name": "case01c",
     "fileName": "testcase01c.json",
-    "expectedResult": "['right', 'left']",
+    "description": "Snake doesn't die in bottom right corner",
+    "expectedResult": "['left']",
     "turns": 1
   },
   {
     "name": "case01d",
     "fileName": "testcase01d.json",
-    "expectedResult": "['right', 'left']",
+    "description": "Snake doesn't die in bottom right corner",
+    "expectedResult": "['right']",
     "turns": 1
   },
   {
     "name": "case02a",
     "fileName": "testcase02a.json",
-    "expectedResult": "['right', 'left']",
+    "description": "Wraparound testing. Make sure the snake avoids the enclosed space (certain death).",
+    "expectedResult": "['left']",
     "turns": 1
   },
   {
     "name": "case03a",
     "fileName": "testcase03a.json",
-    "expectedResult": "['right', 'left']",
+    "description": "Snake shouldn't move up into parallel snake",
+    "expectedResult": "['down', 'left']",
     "turns": 1
   }
 ]
