@@ -360,7 +360,10 @@ def turn(turnData, gameBoard, squatchy, enemies):
 
     # add food points into game boad declaration
     gameBoard.food = []
-    gameBoard.addFood(turnData['board']['food'])
+
+    # if there is food on the board, add it to the list of food in the board data
+    if 'food' in turnData['board']:
+        gameBoard.addFood(turnData['board']['food'])
 
     enemies = []
 
