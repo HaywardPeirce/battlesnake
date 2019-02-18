@@ -1,43 +1,27 @@
-import requests, json, time
+import requests, json
+from datetime import datetime
 
-currentTime = datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d %H:%M:%S')
+currentTime = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
 resultFileName = "backbox_testing_result_" + currentTime + ".json"
 
 testResults = {}
 
-with open("testcases.json") as casesfile: 
-    casesData = casesfile.read() 
-    data_parsed = json.loads(casesData) 
+def makeTestAPICall(data, url = 'http://localhost:8080/move', headers = {"Content-Type" : "application/json"}):
 
-    for test in data_parsed:
-        
-        with open(data_parsed[test].fileName) as file:  
-            data = file.read() 
-            data_parsed = json.loads(data) 
-            print(data_parsed)
-            
-            try:
-                testResponse = makeTestAPICall(data_parsed)
-            except:
-                print ("Error!")
-            
-            if testResponse:
-                processResponse(testResponse, data_parsed)
-                
+    data = json.dumps(data)
+
+    # print("data: {} {}".format(data, type(data)))
 
 
-
-def makeTestAPICall(data, url = 'http://localhost:8080', headers = {'Content-Type' : 'application/json'}):
-    
     try:
-        response = requests.post(url, headers = headers, data = data_parsed)
+        response = requests.post(url, headers = headers, data = data)
      
         print(response)
         response.raise_for_status()
     
     except requests.exceptions.HTTPError as errh:
-        print ("Http Error:",errh)
+        print ("HTTP Error:",errh)
         # return errh
     except requests.exceptions.ConnectionError as errc:
         print ("Error Connecting:",errc)
@@ -49,33 +33,37 @@ def makeTestAPICall(data, url = 'http://localhost:8080', headers = {'Content-Typ
         print ("OOps: Something Else",err)
         # return err
     
-    return response.
+    return response
 
 
-def processResults(response, testData):
+def processResponse(response, testData):
     
-    print(response.move)
-    
+    # print(testData['expectedResult'])
+
+    # expectedResult = json.loads(testData['expectedResult'])
+
+    # print(expectedResult)
+
     message = {}
     
     # check if the returned move is in the list of acceptable moves for the case
-    if response.move is in testData.expectedResult:
+    if response['move'] in testData['expectedResult']:
         
         message = {
-            testData.name: {
+            testData['name']: {
                 "status": "success",
-                "expectedResult": testData.expectedResult,
-                "actualResult":response.move
+                "expectedResult": testData['expectedResult'],
+                "actualResult": response['move']
                 
             }
         }
             
     else: 
         message = {
-            testData.name: {
+            testData['name']: {
                 "status": "fail",
-                "expectedResult": testData.expectedResult,
-                "actualResult":response.move
+                "expectedResult": testData['expectedResult'],
+                "actualResult": response['move']
                 
             }
         }
@@ -83,4 +71,37 @@ def processResults(response, testData):
         
     with open(resultFileName, "a") as file:
             
-        data = file.write(message)
+        file.write(json.dumps(message))
+
+def main():
+    with open("testcases/testcases.json") as casesfile:
+        casesData = casesfile.read()
+        data_parsed = json.loads(casesData)
+
+        for test in data_parsed:
+
+            # print("test:{}".format(test))
+
+            # print("test:{}".format(test[0]))
+            print("test:{}".format(test["name"]))
+
+            with open("testcases/" + test["fileName"]) as file:
+                data = file.read()
+                data_parsed = json.loads(data)
+                # print("data_parsed".format(data_parsed))
+
+                # print(type(data_parsed))
+                try:
+                    testResponse = makeTestAPICall(data_parsed)
+
+                    # print("testResponse: {}".format(testResponse.content))
+
+                    processResponse(json.loads(testResponse.content), test)
+
+                except Exception as e:
+                    print ("Error!: {}".format(e))
+
+
+
+if __name__ == '__main__':
+    main()

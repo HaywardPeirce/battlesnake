@@ -1,0 +1,69 @@
+[
+  {
+    "name": "case0",
+    "fileName": "testcase.json",
+    "expectedResult": "['right', 'left']",
+    "turns": 1
+  },
+  {
+    "name": "case00a",
+    "fileName": "testcase00a.json",
+    "expectedResult": "['right', 'left']",
+    "turns": 1
+  },
+  {
+
+    "name": "case00b",
+    "fileName": "testcase00b.json",
+    "expectedResult": "['right', 'left']",
+    "turns": 1
+  },
+  {
+    "name": "case00c",
+    "fileName": "testcase00c.json",
+    "expectedResult": "['right', 'left']",
+    "turns": 1
+  },
+  {
+    "name": "case00d",
+    "fileName": "testcase00d.json",
+    "expectedResult": "['right', 'left']",
+    "turns": 1
+  },
+  {
+    "name": "case01a",
+    "fileName": "testcase01a.json",
+    "expectedResult": "['right', 'left']",
+    "turns": 1
+  },
+  {
+    "name": "case01b",
+    "fileName": "testcase01b.json",
+    "expectedResult": "['right', 'left']",
+    "turns": 1
+  },
+  {
+    "name": "case01c",
+    "fileName": "testcase01c.json",
+    "expectedResult": "['right', 'left']",
+    "turns": 1
+  },
+  {
+    "name": "case01d",
+    "fileName": "testcase01d.json",
+    "expectedResult": "['right', 'left']",
+    "turns": 1
+  },
+  {
+    "name": "case02a",
+    "fileName": "testcase02a.json",
+    "expectedResult": "['right', 'left']",
+    "turns": 1
+  },
+  {
+    "name": "case03a",
+    "fileName": "testcase03a.json",
+    "expectedResult": "['right', 'left']",
+    "turns": 1
+  }
+]
