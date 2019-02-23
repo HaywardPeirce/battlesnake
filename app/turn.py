@@ -44,13 +44,13 @@ def wallHitCheck(squatchy, height, width, freespaceScore):
         tempDirection.left = freespaceScore
 
     # if squatchy isn't right up againt the right side (assuming board locations are indexed starting at 0)
-    if squatchy.head()[0] <= width:
+    if squatchy.head()[0] < width:
         tempDirection.right = freespaceScore
 
     if squatchy.head()[1] > 0:
         tempDirection.up = freespaceScore
 
-    if squatchy.head()[1] <= height:
+    if squatchy.head()[1] < height:
         tempDirection.down = freespaceScore
 
     tempDirection.printMoves()
@@ -452,7 +452,6 @@ def turn(turnData, gameBoard, squatchy, enemies):
     # TODO: check to see if another snake might move into the same spot as us next turns
     securityScore.boolDownMoves(moveToSameCheck(squatchy, enemies, 100))
     securityScore.printMoves("After `moveToSameCheck`: ")
-
 
     securityScore.boolDownMoves(containedBoundryCheck(squatchy, enemies, gameBoard, 100))
     securityScore.printMoves("After `containedBoundryCheck`: ")
