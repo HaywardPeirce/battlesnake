@@ -3,7 +3,7 @@ from datetime import datetime
 
 currentTime = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
-resultFileName = "backbox_testing_result_" + currentTime + ".json"
+resultFileName = "backbox_testing_result_" + currentTime + ".txt"
 
 testResults = {}
 
@@ -44,34 +44,47 @@ def processResponse(response, testData):
 
     # print(expectedResult)
 
-    message = {}
-    
+    # message = {}
+
+    message = ""
+
     # check if the returned move is in the list of acceptable moves for the case
     if response['move'] in testData['expectedResult']:
-        
-        message = {
-            testData['name']: {
-                "status": "success",
-                "expectedResult": testData['expectedResult'],
-                "actualResult": response['move']
-                
-            }
-        }
-            
-    else: 
-        message = {
-            testData['name']: {
-                "status": "fail",
-                "expectedResult": testData['expectedResult'],
-                "actualResult": response['move']
-                
-            }
-        }
-        
-        
+
+        # message = {
+        #     testData['name']: {
+        #         "status": "success",
+        #         "expectedResult": testData['expectedResult'],
+        #         "actualResult": response['move']
+        #
+        #     }
+        # }
+
+        message += "----------\n"
+        message += "Test case: " + testData['name'] + "\n"
+        message += "status: success\n"
+        message += "expectedResult: " + str(testData['expectedResult']) + "\n"
+        message += "actualResult: " + str(response['move']) + "\n"
+
+    else:
+        # message = {
+        #     testData['name']: {
+        #         "status": "fail",
+        #         "expectedResult": testData['expectedResult'],
+        #         "actualResult": response['move']
+        #
+        #     }
+        # }
+        message += "----------\n"
+        message += "Test case: " + testData['name'] + "\n"
+        message += "status: fail\n"
+        message += "expectedResult: " + str(testData['expectedResult']) + "\n"
+        message += "actualResult: " + str(response['move']) + "\n"
+
+
     with open(resultFileName, "a") as file:
-            
-        file.write(json.dumps(message))
+
+        file.write(message)
 
 def main():
     with open("testcases/testcases.json") as casesfile:
