@@ -259,7 +259,7 @@ def boundryFill(x, y, squatchy, enemies, gameBoard):
 
     # Loop through locations in each of the enemy snake bodies. If this location is already in one of the snakes, return 0
     for enemy in enemies:
-        print(enemy.locations[0])
+        # print(enemy.locations[0])
         if (x,y) in enemy.locations:
             return 0
 
@@ -292,11 +292,11 @@ def containedBoundryCheck(squatchy, enemies, gameBoard, score):
     # check up ( y values go down)
     up = boundryFill(squatchy.head()[0], squatchy.head()[1] - 1, squatchy, enemies, gameBoard)
     # check right (x values go up)
-    right = boundryFill(squatchy.head()[0] - 1, squatchy.head()[1], squatchy, enemies, gameBoard)
+    right = boundryFill(squatchy.head()[0] + 1, squatchy.head()[1], squatchy, enemies, gameBoard)
     # check down (y values go up)
     down = boundryFill(squatchy.head()[0], squatchy.head()[1] + 1, squatchy, enemies, gameBoard)
     # check left ( x values go down)
-    left = boundryFill(squatchy.head()[0] + 1, squatchy.head()[1], squatchy, enemies, gameBoard)
+    left = boundryFill(squatchy.head()[0] - 1, squatchy.head()[1], squatchy, enemies, gameBoard)
     
     biggestArea = max(up, down, left, right)
 
@@ -334,7 +334,7 @@ def containedBoundryCheck(squatchy, enemies, gameBoard, score):
     # if there are no good moves
     else: return tempDirection
 
-#return a string of which way squatchy should move
+# return a string of which way squatchy should move
 def turn(turnData, gameBoard, squatchy, enemies):
 
     #TODO: setup snakes based on the their initial positions
