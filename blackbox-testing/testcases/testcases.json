@@ -69,5 +69,40 @@
     "description": "Snake shouldn't move up into parallel snake",
     "expectedResult": "['down', 'left']",
     "turns": 1
+  },
+  {
+    "name": "case04a",
+    "fileName": "testcase04a.json",
+    "description": "Snake should avoid making head to head contact with equal length snake",
+    "expectedResult": "['left']",
+    "turns": 1
+  },
+  {
+    "name": "case04b",
+    "fileName": "testcase04b.json",
+    "description": "Snake should go for head to head contact with shorter snake",
+    "expectedResult": "['up']",
+    "turns": 1
+  },
+  {
+    "name": "case04c",
+    "fileName": "testcase04c.json",
+    "description": "Snake should avoid head to head contact with longer snake",
+    "expectedResult": "['left']",
+    "turns": 1
+  },
+  {
+    "name": "case04d",
+    "fileName": "testcase04d.json",
+    "description": "Snake should avoid head to head contact with multiple snakes",
+    "expectedResult": "['left']",
+    "turns": 1
+  },
+  {
+    "name": "case04e",
+    "fileName": "testcase04e.json",
+    "description": "Snake is the longest among multiple snakes and should only avoid the body to the south and its own body",
+    "expectedResult": "['left', 'up']",
+    "turns": 1
   }
 ]
