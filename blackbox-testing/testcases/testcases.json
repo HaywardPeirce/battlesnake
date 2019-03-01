@@ -52,7 +52,7 @@
   {
     "name": "case01d",
     "fileName": "testcase01d.json",
-    "description": "Snake doesn't die in bottom right corner",
+    "description": "Snake doesn't die in bottom left corner",
     "expectedResult": "['right']",
     "turns": 1
   },
@@ -60,7 +60,7 @@
     "name": "case02a",
     "fileName": "testcase02a.json",
     "description": "Wraparound testing. Make sure the snake avoids the enclosed space (certain death).",
-    "expectedResult": "['left']",
+    "expectedResult": "['down']",
     "turns": 1
   },
   {
@@ -68,6 +68,62 @@
     "fileName": "testcase03a.json",
     "description": "Snake shouldn't move up into parallel snake",
     "expectedResult": "['down', 'left']",
+    "turns": 1
+  },
+  {
+    "name": "case04a",
+    "fileName": "testcase05a.json",
+    "description": "Snake moves up towards food",
+    "expectedResult": "['up']",
+    "turns": 1
+  },
+  {
+    "name": "case04b",
+    "fileName": "testcase05b.json",
+    "description": "Snake moves right towards food",
+    "expectedResult": "['up']",
+    "turns": 1
+  },
+  {
+    "name": "case04c",
+    "fileName": "testcase05c.json",
+    "description": "Snake moves left towards food",
+    "expectedResult": "['up']",
+    "turns": 1
+  },
+  {
+    "name": "case04d",
+    "fileName": "testcase05d.json",
+    "description": "Snake shoudnt move to a closer food that's on the other side of an enemy",
+    "expectedResult": "['']",
+    "turns": 1
+  },
+  {
+    "name": "case04e",
+    "fileName": "testcase05e.json",
+    "description": "Snake moves towards closer of otherwise equal foods",
+    "expectedResult": "['']",
+    "turns": 1
+  },
+  {
+    "name": "case05a",
+    "fileName": "testcase06a.json",
+    "description": "Snake shoudnt move to same spot other snake might also move into (heads)",
+    "expectedResult": "['']",
+    "turns": 1
+  },
+  {
+    "name": "case05b",
+    "fileName": "testcase06b.json",
+    "description": "Snake can move into end of other snake tail, if it's not planning to eat a food this turn",
+    "expectedResult": "['']",
+    "turns": 1
+  },
+  {
+    "name": "case05c",
+    "fileName": "testcase06c.json",
+    "description": "Snake cant move into end of other snake tail as might be planning to eat a food this turn",
+    "expectedResult": "['']",
     "turns": 1
   }
 ]
