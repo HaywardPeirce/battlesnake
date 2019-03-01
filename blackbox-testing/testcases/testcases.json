@@ -72,57 +72,92 @@
   },
   {
     "name": "case04a",
+    "fileName": "testcase04a.json",
+    "description": "Snake should avoid making head to head contact with equal length snake",
+    "expectedResult": "['left']",
+    "turns": 1
+  },
+  {
+    "name": "case04b",
+    "fileName": "testcase04b.json",
+    "description": "Snake should go for head to head contact with shorter snake",
+    "expectedResult": "['up']",
+    "turns": 1
+  },
+  {
+    "name": "case04c",
+    "fileName": "testcase04c.json",
+    "description": "Snake should avoid head to head contact with longer snake",
+    "expectedResult": "['left']",
+    "turns": 1
+  },
+  {
+    "name": "case04d",
+    "fileName": "testcase04d.json",
+    "description": "Snake should avoid head to head contact with multiple snakes",
+    "expectedResult": "['left']",
+    "turns": 1
+  },
+  {
+    "name": "case04e",
+    "fileName": "testcase04e.json",
+    "description": "Snake is the longest among multiple snakes and should only avoid the body to the south and its own body",
+    "expectedResult": "['left', 'up']",
+    "turns": 1
+  },
+  {
+    "name": "case05a",
     "fileName": "testcase05a.json",
     "description": "Snake moves up towards food",
     "expectedResult": "['up']",
     "turns": 1
   },
   {
-    "name": "case04b",
+    "name": "case05b",
     "fileName": "testcase05b.json",
     "description": "Snake moves right towards food",
     "expectedResult": "['up']",
     "turns": 1
   },
   {
-    "name": "case04c",
+    "name": "case05c",
     "fileName": "testcase05c.json",
     "description": "Snake moves left towards food",
     "expectedResult": "['up']",
     "turns": 1
   },
   {
-    "name": "case04d",
+    "name": "case05c",
+    "fileName": "testcase06c.json",
+    "description": "Snake cant move into end of other snake tail as might be planning to eat a food this turn",
+    "expectedResult": "['']",
+    "turns": 1
+  },
+  {
+    "name": "case05d",
     "fileName": "testcase05d.json",
     "description": "Snake shoudnt move to a closer food that's on the other side of an enemy",
     "expectedResult": "['']",
     "turns": 1
   },
   {
-    "name": "case04e",
+    "name": "case05e",
     "fileName": "testcase05e.json",
     "description": "Snake moves towards closer of otherwise equal foods",
     "expectedResult": "['']",
     "turns": 1
   },
   {
-    "name": "case05a",
+    "name": "case06a",
     "fileName": "testcase06a.json",
     "description": "Snake shoudnt move to same spot other snake might also move into (heads)",
     "expectedResult": "['']",
     "turns": 1
   },
   {
-    "name": "case05b",
+    "name": "case06b",
     "fileName": "testcase06b.json",
     "description": "Snake can move into end of other snake tail, if it's not planning to eat a food this turn",
-    "expectedResult": "['']",
-    "turns": 1
-  },
-  {
-    "name": "case05c",
-    "fileName": "testcase06c.json",
-    "description": "Snake cant move into end of other snake tail as might be planning to eat a food this turn",
     "expectedResult": "['']",
     "turns": 1
   }
