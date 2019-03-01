@@ -93,27 +93,31 @@ def main():
 
         for test in data_parsed:
 
-            # print("test:{}".format(test))
+            if test['enabled']:
 
-            # print("test:{}".format(test[0]))
-            print("test:{}".format(test["name"]))
+                # print("test:{}".format(test))
 
-            with open("testcases/" + test["fileName"]) as file:
-                data = file.read()
-                data_parsed = json.loads(data)
-                # print("data_parsed".format(data_parsed))
+                # print("test:{}".format(test[0]))
+                print("test:{}".format(test["name"]))
 
-                # print(type(data_parsed))
                 try:
-                    testResponse = makeTestAPICall(data_parsed)
+                    with open("testcases/" + test["fileName"]) as file:
+                        data = file.read()
+                        data_parsed = json.loads(data)
+                        # print("data_parsed".format(data_parsed))
 
-                    # print("testResponse: {}".format(testResponse.content))
+                        # print(type(data_parsed))
+                        try:
+                            testResponse = makeTestAPICall(data_parsed)
 
-                    processResponse(json.loads(testResponse.content), test)
+                            # print("testResponse: {}".format(testResponse.content))
 
+                            processResponse(json.loads(testResponse.content), test)
+
+                        except Exception as e:
+                            print ("Error!: {}".format(e))
                 except Exception as e:
                     print ("Error!: {}".format(e))
-
 
 
 if __name__ == '__main__':
