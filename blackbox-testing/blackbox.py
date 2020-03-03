@@ -17,7 +17,7 @@ def makeTestAPICall(data, url = 'http://localhost:8080/move', headers = {"Conten
     try:
         response = requests.post(url, headers = headers, data = data)
      
-        print(response)
+        # print(response)
         response.raise_for_status()
     
     except requests.exceptions.HTTPError as errh:
@@ -36,12 +36,12 @@ def makeTestAPICall(data, url = 'http://localhost:8080/move', headers = {"Conten
     return response
 
 
-def formatResults(responseData, testData):
+def formatResults(responseData, testData, testMode):
 
     message = ""
 
     # check if there were any instances of the test that failed
-    if responseData['fails']:
+    if responseData['fails'] and (testMode == "all" or testMode == "fail"):
         message += "----------\n"
         message += "Test case: " + testData['name'] + "\n"
         message += "status: fail\n"
@@ -49,7 +49,7 @@ def formatResults(responseData, testData):
         message += "actualResult: ['successes': " + str(responseData['successes']) + " ['fails': " + str(responseData['successes']) + "\n"
         message += "moves: " + str(responseData['moves']) + "\n"
 
-    else:
+    elif responseData['successes'] and (testMode == "all" or testMode == "pass"):
         message += "----------\n"
         message += "Test case: " + testData['name'] + "\n"
         message += "status: success\n"
@@ -64,7 +64,7 @@ def formatResults(responseData, testData):
 
 def processResponse(response, responseData, testData):
 
-    print(responseData["moves"])
+    # print(responseData["moves"])
 
     # check if the returned move is in the list of acceptable moves for the case
     if response['move'] in testData['expectedResult']:
@@ -83,14 +83,18 @@ def processResponse(response, responseData, testData):
 def main():
 
     testCasesFilePath = "testcases/testcases.json"
+    testMode = "all"
 
     #parse input arguments -m, method, -l, limit
     parser = argparse.ArgumentParser()
     parser.add_argument('-p','--path', help='path to testcases file')
+    parser.add_argument('-m','--mode', help='test case mode - all, pass, fail')
     args = parser.parse_args()
     
     if args.path: 
         testCasesFilePath = args.path
+    if args.mode: 
+        testMode = args.mode
 
     with open(testCasesFilePath) as casesfile:
         casesData = casesfile.read()
@@ -144,7 +148,7 @@ def main():
                     testLoopCount += 1
 
                 # Once all the test repetitions have been completed, format the results
-                formatResults(responseData, test)
+                formatResults(responseData, test, testMode)
 
 if __name__ == '__main__':
     main()

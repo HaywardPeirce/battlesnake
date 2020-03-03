@@ -130,9 +130,17 @@
   },
   {
     "name": "case05b",
-    "fileName": "testcase05a.json",
+    "fileName": "testcase05b.json",
     "description": "Snake moves away from head to head collision (from other side",
-    "expectedResult": "['right']",
+    "expectedResult": "['right', 'down']",
+    "turns": 10,
+    "enabled": true
+  },
+  {
+    "name": "case06a",
+    "fileName": "testcase06a.json",
+    "description": "Snake moves towards nearest available food, not nearest overall food",
+    "expectedResult": "['right', 'down']",
     "turns": 10,
     "enabled": true
   }
