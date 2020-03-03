@@ -1,4 +1,4 @@
-import requests, json
+import requests, json, argparse
 from datetime import datetime
 
 currentTime = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
@@ -79,7 +79,18 @@ def processResponse(response, responseData, testData):
 
 
 def main():
-    with open("testcases/testcases.json") as casesfile:
+
+    testCasesFilePath = "testcases/testcases.json"
+
+    #parse input arguments -m, method, -l, limit
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-p','--path', help='path to testcases file')
+    args = parser.parse_args()
+    
+    if args.path: 
+        testCasesFilePath = args.path
+
+    with open(testCasesFilePath) as casesfile:
         casesData = casesfile.read()
         data_parsed = json.loads(casesData)
 
