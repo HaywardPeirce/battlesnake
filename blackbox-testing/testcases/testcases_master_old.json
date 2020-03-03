@@ -1,0 +1,187 @@
+[
+  {
+    "name": "case00a",
+    "fileName": "testcase00a.json",
+    "description": "Snake doesn't hit itself while facing up",
+    "expectedResult": "['right', 'left', 'up']",
+    "turns": 1,
+    "enabled": true
+  },
+  {
+
+    "name": "case00b",
+    "fileName": "testcase00b.json",
+    "description": "Snake doesn't hit itself while facing right",
+    "expectedResult": "['right', 'up', 'down']",
+    "turns": 1,
+    "enabled": true
+  },
+  {
+    "name": "case00c",
+    "fileName": "testcase00c.json",
+    "description": "Snake doesn't hit itself while facing down",
+    "expectedResult": "['right', 'left', 'down']",
+    "turns": 1,
+    "enabled": true
+  },
+  {
+    "name": "case00d",
+    "fileName": "testcase00d.json",
+    "description": "Snake doesn't hit itself while facing left",
+    "expectedResult": "['up', 'left', 'down']",
+    "turns": 1,
+    "enabled": true
+  },
+  {
+    "name": "case01a",
+    "fileName": "testcase01a.json",
+    "description": "Snake doesn't die in top left corner",
+    "expectedResult": "['right']",
+    "turns": 1,
+    "enabled": true
+  },
+  {
+    "name": "case01b",
+    "fileName": "testcase01b.json",
+    "description": "Snake doesn't die in top right corner",
+    "expectedResult": "['left']",
+    "turns": 1,
+    "enabled": true
+  },
+  {
+    "name": "case01c",
+    "fileName": "testcase01c.json",
+    "description": "Snake doesn't die in bottom right corner",
+    "expectedResult": "['left']",
+    "turns": 1,
+    "enabled": true
+  },
+  {
+    "name": "case01d",
+    "fileName": "testcase01d.json",
+    "description": "Snake doesn't die in bottom left corner",
+    "expectedResult": "['right']",
+    "turns": 1,
+    "enabled": true
+  },
+  {
+    "name": "case02a",
+    "fileName": "testcase02a.json",
+    "description": "Wraparound testing. Make sure the snake avoids the enclosed space (certain death).",
+    "expectedResult": "['down']",
+    "turns": 1,
+    "enabled": true
+  },
+  {
+    "name": "case03a",
+    "fileName": "testcase03a.json",
+    "description": "Snake shouldn't move up into parallel snake",
+    "expectedResult": "['down', 'left']",
+    "turns": 1,
+    "enabled": true
+  },
+  {
+    "name": "case04a",
+    "fileName": "testcase04a.json",
+    "description": "Snake should avoid making head to head contact with equal length snake",
+    "expectedResult": "['left']",
+    "turns": 1,
+    "enabled": true
+  },
+  {
+    "name": "case04b",
+    "fileName": "testcase04b.json",
+    "description": "Snake should go for head to head contact with shorter snake",
+    "expectedResult": "['up', 'left']",
+    "turns": 1,
+    "enabled": true
+  },
+  {
+    "name": "case04c",
+    "fileName": "testcase04c.json",
+    "description": "Snake should avoid head to head contact with longer snake",
+    "expectedResult": "['left']",
+    "turns": 1,
+    "enabled": true
+  },
+  {
+    "name": "case04d",
+    "fileName": "testcase04d.json",
+    "description": "Snake should avoid head to head contact with multiple snakes",
+    "expectedResult": "['left']",
+    "turns": 1,
+    "enabled": true
+  },
+  {
+    "name": "case04e",
+    "fileName": "testcase04e.json",
+    "description": "Snake is the longest among multiple snakes and should only avoid the body to the south and its own body",
+    "expectedResult": "['left', 'up']",
+    "turns": 1,
+    "enabled": true
+  },
+  {
+    "name": "case05a",
+    "fileName": "testcase05a.json",
+    "description": "Snake moves up towards food",
+    "expectedResult": "['up']",
+    "turns": 1,
+    "enabled": false
+  },
+  {
+    "name": "case05b",
+    "fileName": "testcase05b.json",
+    "description": "Snake moves right towards food",
+    "expectedResult": "['up']",
+    "turns": 1,
+    "enabled": false
+  },
+  {
+    "name": "case05c",
+    "fileName": "testcase05c.json",
+    "description": "Snake moves left towards food",
+    "expectedResult": "['up']",
+    "turns": 1,
+    "enabled": false
+  },
+  {
+    "name": "case05c",
+    "fileName": "testcase06c.json",
+    "description": "Snake cant move into end of other snake tail as might be planning to eat a food this turn",
+    "expectedResult": "['']",
+    "turns": 1,
+    "enabled": false
+  },
+  {
+    "name": "case05d",
+    "fileName": "testcase05d.json",
+    "description": "Snake shoudnt move to a closer food that's on the other side of an enemy",
+    "expectedResult": "['']",
+    "turns": 1,
+    "enabled": false
+  },
+  {
+    "name": "case05e",
+    "fileName": "testcase05e.json",
+    "description": "Snake moves towards closer of otherwise equal foods",
+    "expectedResult": "['']",
+    "turns": 1,
+    "enabled": false
+  },
+  {
+    "name": "case06a",
+    "fileName": "testcase06a.json",
+    "description": "Snake shoudnt move to same spot other snake might also move into (heads)",
+    "expectedResult": "['']",
+    "turns": 1,
+    "enabled": false
+  },
+  {
+    "name": "case06b",
+    "fileName": "testcase06b.json",
+    "description": "Snake can move into end of other snake tail, if it's not planning to eat a food this turn",
+    "expectedResult": "['']",
+    "turns": 1,
+    "enabled": false
+  }
+]

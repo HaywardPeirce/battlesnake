@@ -64,6 +64,8 @@ def formatResults(responseData, testData):
 
 def processResponse(response, responseData, testData):
 
+    print(responseData["moves"])
+
     # check if the returned move is in the list of acceptable moves for the case
     if response['move'] in testData['expectedResult']:
 
@@ -115,7 +117,7 @@ def main():
                     }
 
                 # Loop through the test according to the number of runs indicated
-                while (testLoopCount <= test["turns"]):
+                while (testLoopCount < test["turns"]):
 
                     # print("test:{}".format(test[0]))
                     print("test:{}".format(test["name"]))
