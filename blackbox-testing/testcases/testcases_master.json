@@ -131,8 +131,56 @@
   {
     "name": "case05b",
     "fileName": "testcase05b.json",
-    "description": "Snake moves away from head to head collision (from other side",
+    "description": "Snake moves away from head to head collision (from other side)",
     "expectedResult": "['right', 'down']",
+    "turns": 10,
+    "enabled": true
+  },
+  {
+    "name": "case05c",
+    "fileName": "testcase05c.json",
+    "description": "Snake moves away from head to head collision ",
+    "expectedResult": "['down']",
+    "turns": 10,
+    "enabled": true
+  },
+  {
+    "name": "case05d",
+    "fileName": "testcase05d.json",
+    "description": "Snake moves away from head to head collision (other side)",
+    "expectedResult": "['up']",
+    "turns": 10,
+    "enabled": true
+  },
+  {
+    "name": "case05e",
+    "fileName": "testcase05e.json",
+    "description": "Snake moves away from head to head collision (other side)",
+    "expectedResult": "['up']",
+    "turns": 10,
+    "enabled": true
+  },
+  {
+    "name": "case05f",
+    "fileName": "testcase05f.json",
+    "description": "Snake moves away from head to head collision (other side)",
+    "expectedResult": "['down']",
+    "turns": 10,
+    "enabled": true
+  },
+  {
+    "name": "case05g",
+    "fileName": "testcase05g.json",
+    "description": "Snake moves away from head to head collision",
+    "expectedResult": "['left']",
+    "turns": 10,
+    "enabled": true
+  },
+  {
+    "name": "case05h",
+    "fileName": "testcase05h.json",
+    "description": "Snake moves away from head to head collision (other side)",
+    "expectedResult": "['left', 'down']",
     "turns": 10,
     "enabled": true
   },
