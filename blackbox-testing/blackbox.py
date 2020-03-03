@@ -36,55 +36,47 @@ def makeTestAPICall(data, url = 'http://localhost:8080/move', headers = {"Conten
     return response
 
 
-def processResponse(response, testData):
-    
-    # print(testData['expectedResult'])
-
-    # expectedResult = json.loads(testData['expectedResult'])
-
-    # print(expectedResult)
-
-    # message = {}
+def formatResults(responseData, testData):
 
     message = ""
 
-    # check if the returned move is in the list of acceptable moves for the case
-    if response['move'] in testData['expectedResult']:
-
-        # message = {
-        #     testData['name']: {
-        #         "status": "success",
-        #         "expectedResult": testData['expectedResult'],
-        #         "actualResult": response['move']
-        #
-        #     }
-        # }
-
-        message += "----------\n"
-        message += "Test case: " + testData['name'] + "\n"
-        message += "status: success\n"
-        message += "expectedResult: " + str(testData['expectedResult']) + "\n"
-        message += "actualResult: " + str(response['move']) + "\n"
-
-    else:
-        # message = {
-        #     testData['name']: {
-        #         "status": "fail",
-        #         "expectedResult": testData['expectedResult'],
-        #         "actualResult": response['move']
-        #
-        #     }
-        # }
+    # check if there were any instances of the test that failed
+    if responseData['fails']:
         message += "----------\n"
         message += "Test case: " + testData['name'] + "\n"
         message += "status: fail\n"
         message += "expectedResult: " + str(testData['expectedResult']) + "\n"
-        message += "actualResult: " + str(response['move']) + "\n"
+        message += "actualResult: ['successes': " + str(responseData['successes']) + " ['fails': " + str(responseData['successes']) + "\n"
+        message += "moves: " + str(responseData['moves']) + "\n"
 
+    else:
+        message += "----------\n"
+        message += "Test case: " + testData['name'] + "\n"
+        message += "status: success\n"
+        message += "expectedResult: " + str(testData['expectedResult']) + "\n"
+        # message += "actualResult: " + str(response['move']) + "\n"
+        message += "moves: " + str(responseData['moves']) + "\n"
 
     with open(resultFileName, "a") as file:
 
         file.write(message)
+
+
+def processResponse(response, responseData, testData):
+
+    # check if the returned move is in the list of acceptable moves for the case
+    if response['move'] in testData['expectedResult']:
+
+        responseData["successes"] += 1
+
+    else:
+
+        responseData["fails"] += 1
+
+    responseData["moves"][response['move']] += 1
+
+    # return responseData
+
 
 def main():
     with open("testcases/testcases.json") as casesfile:
@@ -93,32 +85,53 @@ def main():
 
         for test in data_parsed:
 
-            if test['enabled']:
+            if test["enabled"]:
 
                 # print("test:{}".format(test))
 
-                # print("test:{}".format(test[0]))
-                print("test:{}".format(test["name"]))
+                testLoopCount = 0
 
-                try:
-                    with open("testcases/" + test["fileName"]) as file:
-                        data = file.read()
-                        data_parsed = json.loads(data)
-                        # print("data_parsed".format(data_parsed))
+                responseData = {
+                    "successes": 0,
+                    "fails": 0,
+                    "moves":
+                        {
+                            "right": 0,
+                            "left": 0,
+                            "up": 0,
+                            "down": 0
+                        }
+                    }
 
-                        # print(type(data_parsed))
-                        try:
-                            testResponse = makeTestAPICall(data_parsed)
+                # Loop through the test according to the number of runs indicated
+                while (testLoopCount <= test["turns"]):
 
-                            # print("testResponse: {}".format(testResponse.content))
+                    # print("test:{}".format(test[0]))
+                    print("test:{}".format(test["name"]))
 
-                            processResponse(json.loads(testResponse.content), test)
+                    try:
+                        with open("testcases/" + test["fileName"]) as file:
+                            data = file.read()
+                            data_parsed = json.loads(data)
+                            # print("data_parsed".format(data_parsed))
 
-                        except Exception as e:
-                            print ("Error!: {}".format(e))
-                except Exception as e:
-                    print ("Error!: {}".format(e))
+                            # print(type(data_parsed))
+                            try:
+                                testResponse = makeTestAPICall(data_parsed)
 
+                                # print("testResponse: {}".format(testResponse.content))
+
+                                processResponse(json.loads(testResponse.content), responseData,  test)
+
+                            except Exception as e:
+                                print ("Error!: {}".format(e))
+                    except Exception as e:
+                        print ("Error!: {}".format(e))
+
+                    testLoopCount += 1
+
+                # Once all the test repetitions have been completed, format the results
+                formatResults(responseData, test)
 
 if __name__ == '__main__':
     main()
