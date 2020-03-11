@@ -6,7 +6,7 @@ import logging
 from app.turn import turn
 from app.battlesnakeClasses import *
 
-from api import ping_response, start_response, move_response, end_response
+from app.api import ping_response, start_response, move_response, end_response
 
 logging.basicConfig(level=logging.INFO)
 
