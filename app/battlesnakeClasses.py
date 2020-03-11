@@ -269,6 +269,7 @@ class Snake:
         self.health = 100 #health of the snake
         self.length = 3 #length of the snake
         self.locations = [] #list of positions on the baord occupied by the snake
+        self.openAreaList = [] # Direction to largest open area from `containedBoundryCheck`
 
     #TODO: function for returning this snakes next move. Only if it's not our snake?
 

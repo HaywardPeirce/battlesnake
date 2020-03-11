@@ -159,53 +159,64 @@ def foodCheck(squatchy, height, width, food, score):
     # calculate directions to closest food.
     # TODO: Maybe see of we are the closest as well?
 
+    
+
     for nibble in food:
 
-        # tempDistance = math.sqrt( ((squatchy.head()[0]-nibble[0])**2)+((squatchy.head()[1]-nibble[1])**2) )
+        # check if this food item is accessible within the current contained area
+        if nibble in squatchy.openAreaList:
 
-        # Work out the distance to this instance of food (nibble)
-        # just sum each component of the distance rather than finding the diagonal route
-        tempDistance = abs(squatchy.head()[0]-nibble[0]) + abs(squatchy.head()[1]-nibble[1])
+            print("nibble `" + str(nibble) + "` is in the available open area")
 
-        # TODO: include check for whether this food is in the array of the largest fill, or at least a fillable spot
+            # tempDistance = math.sqrt( ((squatchy.head()[0]-nibble[0])**2)+((squatchy.head()[1]-nibble[1])**2) )
 
-        # check if the distance to this food is shorter than the existing best distance, and if so set it as the location of the best food
-        if tempDistance < bestDist:
-            bestFood = [tuple((nibble[0],nibble[1]))]
-            bestDist = tempDistance
+            # Work out the distance to this instance of food (nibble)
+            # just sum each component of the distance rather than finding the diagonal route
+            tempDistance = abs(squatchy.head()[0]-nibble[0]) + abs(squatchy.head()[1]-nibble[1])
 
-        # if the food is equidstant to the nearest food, add it to the list of ok foods to go to
-        elif tempDistance == bestDist:
-            bestFood.append(tuple((nibble[0],nibble[1])))
+            # TODO: include check for whether this food is in the array of the largest fill, or at least a fillable spot
 
-    # print(squatchy.health, score)
-    print("The best food items are {}, and are {} spaces away.".format(bestFood, bestDist))
+            # check if the distance to this food is shorter than the existing best distance, and if so set it as the location of the best food
+            if tempDistance < bestDist:
+                bestFood = [tuple((nibble[0],nibble[1]))]
+                bestDist = tempDistance
 
-    # TODO: work out scaling/weighting factor based on how hungry squatchy is. Maybe look at using the distance to the food
-    # if squatchy.health > 30:
-    #     score = score/2
-    # elif squatchy.health < 20 and bestDist > 10:
-    if squatchy.health < 30:
-        score = score*3
+            # if the food is equidstant to the nearest food, add it to the list of ok foods to go to
+            elif tempDistance == bestDist:
+                bestFood.append(tuple((nibble[0],nibble[1])))
 
-    print("The weighted food score is now {}".format(score))
+    # if there are items in the list of the best food to move to, that can be moved to
+    if len(bestFood) > 0:
 
-    # loop through the food items that are closest
-    for item in bestFood:
-        tempDirection = squatchy.directionCheck(item, score)
-        # tempDirection.printMoves("after best direction")
+        # print(squatchy.health, score)
+        print("The best food items are {}, and are {} spaces away.".format(bestFood, bestDist))
 
-        # take all the directions which lead to the closest foods, but don't go above the value of `score`
-        if tempDirection.up > foodDirections.up:
-            foodDirections.up = tempDirection.up
-        if tempDirection.down > foodDirections.down:
-            foodDirections.down = tempDirection.down
-        if tempDirection.right > foodDirections.right:
-            foodDirections.right = tempDirection.right
-        if tempDirection.left > foodDirections.left:
-            foodDirections.left = tempDirection.left
+        # TODO: work out scaling/weighting factor based on how hungry squatchy is. Maybe look at using the distance to the food
+        # if squatchy.health > 30:
+        #     score = score/2
+        # elif squatchy.health < 20 and bestDist > 10:
+        if squatchy.health < 30:
+            score = score*3
 
-    foodDirections.printMoves("The recommendation for `foodCheck` is ")
+        print("The weighted food score is now {}".format(score))
+
+        # loop through the food items that are closest
+        for item in bestFood:
+            tempDirection = squatchy.directionCheck(item, score)
+            # tempDirection.printMoves("after best direction")
+
+            # take all the directions which lead to the closest foods, but don't go above the value of `score`
+            if tempDirection.up > foodDirections.up:
+                foodDirections.up = tempDirection.up
+            if tempDirection.down > foodDirections.down:
+                foodDirections.down = tempDirection.down
+            if tempDirection.right > foodDirections.right:
+                foodDirections.right = tempDirection.right
+            if tempDirection.left > foodDirections.left:
+                foodDirections.left = tempDirection.left
+
+        foodDirections.printMoves("The recommendation for `foodCheck` is ")
+    
     return foodDirections
 
 
@@ -253,38 +264,51 @@ def boundryFill(x, y, squatchy, enemies, gameBoard, containedAreaCheckList):
 
     # if this point has already been checked
     if (x,y) in containedAreaCheckList:
-        return 0
+        return [0,0]
 
     # if the point is not on the game board, go no further, don't add it to the count
     if not gameBoard.isOnBoard((x,y)):
-        return 0
+        return [0,0]
 
     # if this point is the location of a piece of a snake, go no further, dont add it to the count
     if (x,y) in squatchy.locations:
-        return 0
+        return [0,0]
 
     # Loop through locations in each of the enemy snake bodies. If this location is already in one of the snakes, return 0
     for enemy in enemies:
         # print(enemy.locations[0])
         if (x,y) in enemy.locations:
-            return 0
+            return [0,0]
 
-    # add this location to the list of points on the board that have been checked
+    # add this location (that is able to be moved to) to the list of points on the board that have been checked
     containedAreaCheckList.append((x,y))
 
     # if we have made it this far, then we should could the space
     count = 1
 
-    # check up
-    count = count + boundryFill(x, y - 1, squatchy, enemies, gameBoard, containedAreaCheckList)
-    # check right
-    count = count + boundryFill(x + 1, y, squatchy, enemies, gameBoard, containedAreaCheckList)
-    # check down
-    count = count + boundryFill(x, y + 1, squatchy, enemies, gameBoard, containedAreaCheckList)
-    # check left
-    count = count + boundryFill(x - 1, y, squatchy, enemies, gameBoard, containedAreaCheckList)
+    tempContainedAreaCheckList = []
 
-    return count
+    # check up
+    up = boundryFill(x, y - 1, squatchy, enemies, gameBoard, containedAreaCheckList)
+    count = count + up[0]
+    tempContainedAreaCheckList.append(up[1])
+
+    # check right
+    right = boundryFill(x + 1, y, squatchy, enemies, gameBoard, containedAreaCheckList)
+    count = count + right[0]
+    tempContainedAreaCheckList.append(right[1])
+
+    # check down
+    down = boundryFill(x, y + 1, squatchy, enemies, gameBoard, containedAreaCheckList)
+    count = count + down[0]
+    tempContainedAreaCheckList.append(down[1])
+
+    # check left
+    left = boundryFill(x - 1, y, squatchy, enemies, gameBoard, containedAreaCheckList)
+    count = count + left[0]
+    tempContainedAreaCheckList.append(left[1])
+
+    return [count, containedAreaCheckList]
 
 # check to see which direction will move away from the smalled contained area
 def containedBoundryCheck(squatchy, enemies, gameBoard, score):
@@ -304,12 +328,20 @@ def containedBoundryCheck(squatchy, enemies, gameBoard, score):
     # check left ( x values go down)
     left = boundryFill(squatchy.head()[0] - 1, squatchy.head()[1], squatchy, enemies, gameBoard, [])
     
-    biggestArea = max(up, down, left, right)
+    biggestArea = max(up[0], down[0], left[0], right[0])
 
-    if up == biggestArea: tempDirection.up = score
-    if down == biggestArea: tempDirection.down = score
-    if left == biggestArea: tempDirection.left = score
-    if right == biggestArea: tempDirection.right = score
+    if up[0] == biggestArea: 
+        tempDirection.up = score
+        squatchy.openAreaList = up[1]
+    if down[0] == biggestArea: 
+        tempDirection.down = score
+        squatchy.openAreaList = down[1]
+    if left[0] == biggestArea: 
+        tempDirection.left = score
+        squatchy.openAreaList = left[1]
+    if right[0] == biggestArea: 
+        tempDirection.right = score
+        squatchy.openAreaList = right[1]
 
     # # If there is only one good direction return that
     # if len(tempDirection.bestDirection()) == 1: return tempDirection
@@ -339,6 +371,12 @@ def containedBoundryCheck(squatchy, enemies, gameBoard, score):
     #
     # # if there are no good moves
     # else: return tempDirection
+
+
+
+    # set the snake's direction to largest open area
+    squatchy.openAreaDirection = tempDirection
+
     return tempDirection
 
 # compare the strategy moves to security moves, and find the best strategy move that is on the list of security moves
