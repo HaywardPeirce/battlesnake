@@ -148,15 +148,15 @@
     "name": "case05d",
     "fileName": "testcase05d.json",
     "description": "Snake moves away from head to head collision (other side)",
-    "expectedResult": "['up']",
+    "expectedResult": "['up','left','down']",
     "turns": 10,
     "enabled": true
   },
   {
     "name": "case05e",
     "fileName": "testcase05e.json",
-    "description": "Snake moves away from head to head collision (other side)",
-    "expectedResult": "['up']",
+    "description": "Snake moves away from head to head collision",
+    "expectedResult": "['down']",
     "turns": 10,
     "enabled": true
   },

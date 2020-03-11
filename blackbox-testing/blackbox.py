@@ -46,7 +46,7 @@ def formatResults(responseData, testData, testMode):
         message += "Test case: " + testData['name'] + "\n"
         message += "status: fail\n"
         message += "expectedResult: " + str(testData['expectedResult']) + "\n"
-        message += "actualResult: ['successes': " + str(responseData['successes']) + " ['fails': " + str(responseData['successes']) + "\n"
+        message += "actualResult: ['successes': " + str(responseData['successes']) + "] ['fails': " + str(responseData['fails']) + "]\n"
         message += "moves: " + str(responseData['moves']) + "\n"
 
     elif responseData['successes'] and (testMode == "all" or testMode == "pass"):
@@ -64,7 +64,7 @@ def formatResults(responseData, testData, testMode):
 
 def processResponse(response, responseData, testData):
 
-    # print(responseData["moves"])
+    # print(responseData)
 
     # check if the returned move is in the list of acceptable moves for the case
     if response['move'] in testData['expectedResult']:
@@ -84,17 +84,23 @@ def main():
 
     testCasesFilePath = "testcases/testcases.json"
     testMode = "all"
+    overrideRepetitions = False
+    repetitionCount = 1
 
     #parse input arguments -m, method, -l, limit
     parser = argparse.ArgumentParser()
     parser.add_argument('-p','--path', help='path to testcases file')
     parser.add_argument('-m','--mode', help='test case mode - all, pass, fail')
+    parser.add_argument('-r','--reprepetitions', help='How many runs of each test to do. Overrides explicit numbers in config file')
     args = parser.parse_args()
     
     if args.path: 
         testCasesFilePath = args.path
     if args.mode: 
         testMode = args.mode
+    if args.reprepetitions: 
+        repetitionCount = args.repetitions
+        overrideRepetitions = True
 
     with open(testCasesFilePath) as casesfile:
         casesData = casesfile.read()
@@ -120,8 +126,15 @@ def main():
                         }
                     }
 
+                # if a CLI override of the number of loops to do was included then use that, otherwise use the value from the file
+                if overrideRepetitions:
+                    tempRepetitionCount = repetitionCount
+
+                else:
+                    tempRepetitionCount = test["turns"]
+
                 # Loop through the test according to the number of runs indicated
-                while (testLoopCount < test["turns"]):
+                while (testLoopCount < tempRepetitionCount):
 
                     # print("test:{}".format(test[0]))
                     print("test:{}".format(test["name"]))
