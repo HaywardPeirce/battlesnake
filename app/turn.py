@@ -1,4 +1,4 @@
-from modulefiles.battlesnakeClasses import *
+from battlesnakeClasses import *
 import random, math, logging, time
 
 logging.basicConfig(level=logging.INFO)

@@ -3,8 +3,8 @@ import os
 import random
 import bottle
 import logging
-from modulefiles.turn import turn
-from modulefiles.battlesnakeClasses import *
+from turn import turn
+from battlesnakeClasses import *
 
 from api import ping_response, start_response, move_response, end_response
 
