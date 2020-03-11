@@ -99,6 +99,12 @@ class Quadrant:
 #|Q4|Q3|
 #-------
 
+#-------
+#|(0,0)|(1,0)|
+#-------
+#|(0,1)|(1,1)|
+#-------
+
 class Board:
     def __init__(self, height, width, food = []):
         # zero-indexed height and width for the board
@@ -210,6 +216,7 @@ class MoveChoices:
         if self.left == maxValue: direction.append("left")
 
         #print("the best direction to move is...")
+        print("------------------------------------------------")
         print("The best direction to move is: {}".format(direction))
         return direction
 
@@ -250,7 +257,8 @@ class MoveChoices:
             self.left = otherMoves.left
 
     def printMoves(self, info=""):
-        logging.debug("{} Up: {}, Right: {}, Down: {}, Left: {}".format(info, self.up, self.right, self.down, self.left))
+        # logging.debug("{} Up: {}, Right: {}, Down: {}, Left: {}".format(info, self.up, self.right, self.down, self.left))
+        print("{} Up: {}, Right: {}, Down: {}, Left: {}".format(info, self.up, self.right, self.down, self.left))
 
 class Snake:
     def __init__(self, id, name):
