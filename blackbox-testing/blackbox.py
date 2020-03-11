@@ -57,9 +57,11 @@ def formatResults(responseData, testData, testMode):
         # message += "actualResult: " + str(response['move']) + "\n"
         message += "moves: " + str(responseData['moves']) + "\n"
 
-    with open(resultFileName, "a") as file:
-
-        file.write(message)
+    # check that there are results to print to the file
+    if message:
+        with open(resultFileName, "a") as file:
+            
+            file.write(message)
 
 
 def processResponse(response, responseData, testData):
@@ -84,23 +86,23 @@ def main():
 
     testCasesFilePath = "testcases/testcases.json"
     testMode = "all"
-    overrideRepetitions = False
-    repetitionCount = 1
+    overrideRuns = False
+    runCount = 1
 
     #parse input arguments -m, method, -l, limit
     parser = argparse.ArgumentParser()
     parser.add_argument('-p','--path', help='path to testcases file')
     parser.add_argument('-m','--mode', help='test case mode - all, pass, fail')
-    parser.add_argument('-r','--reprepetitions', help='How many runs of each test to do. Overrides explicit numbers in config file')
+    parser.add_argument('-r','--runs', help='How many runs of each test to do. Overrides explicit numbers in config file')
     args = parser.parse_args()
     
     if args.path: 
         testCasesFilePath = args.path
     if args.mode: 
         testMode = args.mode
-    if args.reprepetitions: 
-        repetitionCount = args.repetitions
-        overrideRepetitions = True
+    if args.runs: 
+        runCount = int(args.runs)
+        overrideRuns = True
 
     with open(testCasesFilePath) as casesfile:
         casesData = casesfile.read()
@@ -127,14 +129,14 @@ def main():
                     }
 
                 # if a CLI override of the number of loops to do was included then use that, otherwise use the value from the file
-                if overrideRepetitions:
-                    tempRepetitionCount = repetitionCount
+                if overrideRuns:
+                    temprunCount = runCount
 
                 else:
-                    tempRepetitionCount = test["turns"]
+                    temprunCount = test["turns"]
 
                 # Loop through the test according to the number of runs indicated
-                while (testLoopCount < tempRepetitionCount):
+                while (testLoopCount < temprunCount):
 
                     # print("test:{}".format(test[0]))
                     print("test:{}".format(test["name"]))
@@ -159,7 +161,7 @@ def main():
                         print ("Error!: {}".format(e))
 
                     testLoopCount += 1
-
+                
                 # Once all the test repetitions have been completed, format the results
                 formatResults(responseData, test, testMode)
 
